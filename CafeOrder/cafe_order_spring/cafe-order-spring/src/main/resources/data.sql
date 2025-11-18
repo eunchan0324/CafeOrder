@@ -37,3 +37,41 @@ VALUES ('seller1', 'qwer1234', 'SELLER', 1),
 INSERT INTO users (username, password, role, store_id)
 VALUES ('customer1', 'qwer1234', 'CUSTOMER', NULL),
        ('customer2', 'qwer1234', 'CUSTOMER', NULL);
+
+
+-- 주문 테스트 데이터
+
+-- 강남점 (storeId=1) 주문
+INSERT INTO orders (order_id, customer_id, store_id, order_time, total_price, status, waiting_number)
+VALUES
+    (RANDOM_UUID(), 'customer1', 1, DATEADD('DAY', -2, NOW()), 5000, 'COMPLETED', 1),
+    (RANDOM_UUID(), 'customer2', 1, DATEADD('DAY', -2, NOW()), 11000, 'COMPLETED', 2),
+    (RANDOM_UUID(), 'customer1', 1, DATEADD('DAY', -1, NOW()), 6500, 'COMPLETED', 1),
+    (RANDOM_UUID(), 'customer2', 1, NOW(), 4500, 'PREPARING', 1);
+
+-- 홍대점 (storeId=2) 주문
+INSERT INTO orders (order_id, customer_id, store_id, order_time, total_price, status, waiting_number)
+VALUES
+    (RANDOM_UUID(), 'customer1', 2, DATEADD('DAY', -3, NOW()), 10000, 'COMPLETED', 1),
+    (RANDOM_UUID(), 'customer2', 2, DATEADD('DAY', -1, NOW()), 12000, 'COMPLETED', 1),
+    (RANDOM_UUID(), 'customer1', 2, NOW(), 5500, 'READY', 1);
+
+-- 신촌점 (storeId=3) 주문
+INSERT INTO orders (order_id, customer_id, store_id, order_time, total_price, status, waiting_number)
+VALUES
+    (RANDOM_UUID(), 'customer2', 3, DATEADD('DAY', -4, NOW()), 15000, 'COMPLETED', 1),
+    (RANDOM_UUID(), 'customer1', 3, DATEADD('DAY', -2, NOW()), 6000, 'COMPLETED', 2),
+    (RANDOM_UUID(), 'customer2', 3, DATEADD('DAY', -1, NOW()), 11500, 'COMPLETED', 3);
+
+-- 잠실점 (storeId=4) 주문
+INSERT INTO orders (order_id, customer_id, store_id, order_time, total_price, status, waiting_number)
+VALUES
+    (RANDOM_UUID(), 'customer1', 4, DATEADD('DAY', -1, NOW()), 9000, 'COMPLETED', 1),
+    (RANDOM_UUID(), 'customer2', 4, NOW(), 5000, 'ORDER_PLACED', 1);
+
+-- 판교점 (storeId=5) 주문
+INSERT INTO orders (order_id, customer_id, store_id, order_time, total_price, status, waiting_number)
+VALUES
+    (RANDOM_UUID(), 'customer1', 5, DATEADD('DAY', -5, NOW()), 12500, 'COMPLETED', 1),
+    (RANDOM_UUID(), 'customer2', 5, DATEADD('DAY', -3, NOW()), 18000, 'COMPLETED', 2),
+    (RANDOM_UUID(), 'customer1', 5, DATEADD('DAY', -1, NOW()), 7000, 'COMPLETED', 3);
