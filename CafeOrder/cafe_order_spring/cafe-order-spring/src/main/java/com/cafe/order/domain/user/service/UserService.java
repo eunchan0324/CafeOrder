@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-//  private final JpaUserRepository userRepository;
-    private final SqlUserRepository userRepository;
+  private final JpaUserRepository userRepository;
+//    private final SqlUserRepository userRepository;
 //    private final InMemoryUserRepository userRepository;
 
   private final StoreService storeService;
 
-  public UserService(SqlUserRepository userRepository, StoreService storeService) {
+  public UserService(JpaUserRepository userRepository, StoreService storeService) {
     this.userRepository = userRepository;
     this.storeService = storeService;
   }
@@ -86,8 +86,8 @@ public class UserService {
 
     seller.setStoreId(storeId);
 
-//    return userRepository.save(seller); // JPA
-        return userRepository.update(seller); // SQL, InMemory
+    return userRepository.save(seller); // JPA
+//        return userRepository.update(seller); // SQL, InMemory
   }
 
   // DELETE : 판매자 계정 삭제
