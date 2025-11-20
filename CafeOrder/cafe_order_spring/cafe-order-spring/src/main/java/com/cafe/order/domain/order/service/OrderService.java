@@ -16,12 +16,12 @@ import java.util.*;
 public class OrderService {
 
 //    private final JpaOrderRepository orderRepository;
-    private final SqlOrderRepository orderRepository;
-//    private final InMemoryOrderRepository orderRepository;
+//    private final SqlOrderRepository orderRepository;
+    private final InMemoryOrderRepository orderRepository;
 
     private final StoreService storeService;
 
-    public OrderService(SqlOrderRepository orderRepository, StoreService storeService) {
+    public OrderService(InMemoryOrderRepository orderRepository, StoreService storeService) {
         this.orderRepository = orderRepository;
         this.storeService = storeService;
     }
