@@ -19,21 +19,21 @@ public class OrderItem {
     private Integer id;
 
     // Menu와의 관계 (N:1)
-    @Column(columnDefinition = "BINARY(16)", nullable = false)
+    @Column(columnDefinition = "BINARY(16)", nullable = false, name = "menu_id")
     private UUID menuId;
 
     // 주문 시점의 메뉴 정보 (스냅샷)
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, name = "menu_name")
     private String menuName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "menu_price")
     private Integer menuPrice;
 
     // 옵션 정보
     @Column(length = 10)
     private String temperature; // HOT, ICE
 
-    @Column(length = 20)
+    @Column(length = 20, name = "cup_type")
     private String cupType; // 일회용컵, 개인컵, 매장컵
 
     @Column(length = 50)
@@ -43,7 +43,7 @@ public class OrderItem {
     @Column(nullable = false)
     private Integer quantity; // 수량
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "final_price")
     private Integer finalPrice; // 옵션 포함 최종 가격
 
     // 생성자

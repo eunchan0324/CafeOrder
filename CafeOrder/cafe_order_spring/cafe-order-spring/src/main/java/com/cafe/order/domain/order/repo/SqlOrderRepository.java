@@ -2,14 +2,21 @@ package com.cafe.order.domain.order.repo;
 
 import com.cafe.order.common.util.UUIDUtils;
 import com.cafe.order.domain.order.dto.Order;
+import com.cafe.order.domain.order.dto.OrderItem;
 import com.cafe.order.domain.order.dto.OrderStatus;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-//@Repository
+import static com.cafe.order.common.util.UUIDUtils.convertBytesToUUID;
+import static com.cafe.order.common.util.UUIDUtils.convertUUIDToBytes;
+
+@Repository
 public class SqlOrderRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -18,11 +25,86 @@ public class SqlOrderRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * 관리자용
+     */
     // READ : status = COMPLETE인 전체 지점 매출 조회
     public List<Order> findByStatus(OrderStatus status) {
         String sql = "SELECT order_id, customer_id, store_id, order_time, total_price, status, waiting_number FROM orders WHERE status = ?";
 
         return jdbcTemplate.query(sql, orderRowMapper(), status.name());
+    }
+
+
+    /**
+     * 판매자용
+     */
+    // READ : storeId로 주문 목록 조회 (List<Order>)
+    public List<Order> findByStoreId(Integer storeId) {
+        String sql = "SELECT order_id, customer_id, store_id, order_time, total_price, status, waiting_number " +
+                "FROM orders WHERE store_id = ?";
+
+        List<Order> orders = jdbcTemplate.query(sql, orderRowMapper(), storeId);
+
+        // 각 Order마다 OrderItem 조회
+        for (Order order : orders) {
+            String itemSql = "SELECT id, menu_id, menu_name, menu_price, temperature, cup_type, options, quantity, final_price " +
+                    "FROM order_items WHERE order_id = ?";
+            byte[] orderIdBytes = convertUUIDToBytes(order.getOrderId());
+            List<OrderItem> items = jdbcTemplate.query(itemSql, orderItemRowMapper(), orderIdBytes);
+            order.setItems(items);
+        }
+
+        return orders;
+    }
+
+    // READ : orderId로 Optional<Order> 조회
+    public Optional<Order> findById(UUID orderId) {
+        String orderSql = "SELECT order_id, customer_id, store_id, order_time, total_price, status, waiting_number " +
+                "FROM orders WHERE order_id = ?";
+
+        byte[] orderIdBytes = convertUUIDToBytes(orderId);
+
+        try {
+            // 1. Order 조회
+            Order order = jdbcTemplate.queryForObject(orderSql, orderRowMapper(), orderIdBytes);
+
+            // 2. OrderItem 조회
+            String itemSql = "SELECT id, menu_id, menu_name, menu_price, temperature, cup_type, options, quantity, final_price " +
+                    "FROM order_items WHERE order_id = ?";
+
+            List<OrderItem> items = jdbcTemplate.query(itemSql, orderItemRowMapper(), orderIdBytes);
+
+            // 3. Order에 items 설정
+            order.setItems(items);
+
+            return Optional.of(order);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+
+    // UPDATE : order -> newOrder로 변경
+    public Order update(Order order) {
+        String sql = "UPDATE orders " +
+                "SET customer_id = ?, store_id = ?, order_time = ?, total_price = ?," +
+                "status = ?, waiting_number = ? " +
+                "WHERE order_id = ?";
+
+        // UUID 변환
+        byte[] orderIdBytes = convertUUIDToBytes(order.getOrderId());
+
+        jdbcTemplate.update(sql,
+                order.getCustomerId(),
+                order.getStoreId(),
+                order.getOrderTime(),
+                order.getTotalPrice(),
+                order.getStatus().name(),
+                order.getWaitingNumber(),
+                orderIdBytes);
+
+        return order;
     }
 
 
@@ -46,7 +128,29 @@ public class SqlOrderRepository {
             order.setWaitingNumber(rs.wasNull() ? null : waitingNumber);
 
             return order;
-        } );
+        });
+    }
+
+    // OrderItem용 RowMapper
+    private RowMapper<OrderItem> orderItemRowMapper() {
+        return ((rs, rowNum) -> {
+            OrderItem item = new OrderItem();
+
+            item.setId(rs.getInt("id")); // 수정, 삭제 대비
+
+            byte[] menuIdByte = rs.getBytes("menu_id");
+            item.setMenuId(convertBytesToUUID(menuIdByte));
+
+            item.setMenuName(rs.getString("menu_name"));
+            item.setMenuPrice(rs.getInt("menu_price"));
+            item.setTemperature(rs.getString("temperature"));
+            item.setCupType(rs.getString("cup_type"));
+            item.setOptions(rs.getString("options"));
+            item.setQuantity(rs.getInt("quantity"));
+            item.setFinalPrice(rs.getInt("final_price"));
+
+            return item;
+        });
     }
 
 }
