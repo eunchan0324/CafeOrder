@@ -16,7 +16,7 @@ import java.util.UUID;
 import static com.cafe.order.common.util.UUIDUtils.convertBytesToUUID;
 import static com.cafe.order.common.util.UUIDUtils.convertUUIDToBytes;
 
-@Repository
+//@Repository
 public class SqlOrderRepository {
 
     private final JdbcTemplate jdbcTemplate;

@@ -18,6 +18,10 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // Order와의 관계 (N:1)
+    @Column(columnDefinition = "BINARY(16)", name = "order_id")
+    private UUID orderId;
+
     // Menu와의 관계 (N:1)
     @Column(columnDefinition = "BINARY(16)", nullable = false, name = "menu_id")
     private UUID menuId;
@@ -47,7 +51,8 @@ public class OrderItem {
     private Integer finalPrice; // 옵션 포함 최종 가격
 
     // 생성자
-    public OrderItem(UUID menuId, String menuName, Integer menuPrice, String temperature, String cupType, String options, Integer quantity, Integer finalPrice) {
+    public OrderItem(UUID orderId, UUID menuId, String menuName, Integer menuPrice, String temperature, String cupType, String options, Integer quantity, Integer finalPrice) {
+        this.orderId = orderId;
         this.menuId = menuId;
         this.menuName = menuName;
         this.menuPrice = menuPrice;
