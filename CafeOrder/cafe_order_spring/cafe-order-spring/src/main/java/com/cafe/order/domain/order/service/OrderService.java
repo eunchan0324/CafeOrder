@@ -15,13 +15,13 @@ import java.util.*;
 @Service
 public class OrderService {
 
-    private final JpaOrderRepository orderRepository;
-//    private final SqlOrderRepository orderRepository;
+//    private final JpaOrderRepository orderRepository;
+    private final SqlOrderRepository orderRepository;
 //    private final InMemoryOrderRepository orderRepository;
 
     private final StoreService storeService;
 
-    public OrderService(JpaOrderRepository orderRepository, StoreService storeService) {
+    public OrderService(SqlOrderRepository orderRepository, StoreService storeService) {
         this.orderRepository = orderRepository;
         this.storeService = storeService;
     }
@@ -125,7 +125,8 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
 
         order.setStatus(newStatus);
-        return orderRepository.save(order);
+//        return orderRepository.save(order); // JPA
+        return orderRepository.update(order); // SQL, InMemory
     }
 
 
