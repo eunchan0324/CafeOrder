@@ -15,13 +15,13 @@ import java.util.*;
 @Service
 public class OrderService {
 
-//    private final JpaOrderRepository orderRepository;
+    private final JpaOrderRepository orderRepository;
 //    private final SqlOrderRepository orderRepository;
-    private final InMemoryOrderRepository orderRepository;
+//    private final InMemoryOrderRepository orderRepository;
 
     private final StoreService storeService;
 
-    public OrderService(InMemoryOrderRepository orderRepository, StoreService storeService) {
+    public OrderService(JpaOrderRepository orderRepository, StoreService storeService) {
         this.orderRepository = orderRepository;
         this.storeService = storeService;
     }
@@ -78,6 +78,8 @@ public class OrderService {
     /**
      * 판매자용
      */
+
+    /** 주문 관리 메뉴 */
     // READ : 특정 지점 주문 목록 조회
     public List<Order> findByStoreId(Integer storeId) {
         return orderRepository.findByStoreId(storeId);
@@ -125,9 +127,52 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
 
         order.setStatus(newStatus);
-//        return orderRepository.save(order); // JPA
-        return orderRepository.update(order); // SQL, InMemory
+        return orderRepository.save(order); // JPA
+//        return orderRepository.update(order); // SQL, InMemory
     }
+
+    /**
+     * 매출 관리 메뉴
+     */
+    // READ : 특정 지점 완료된 주문 목록 조회 (COMPLETE)
+    public List<Order> findCompleteOrdersByStoreId(Integer storeId) {
+        List<Order> orders = orderRepository.findByStoreIdAndStatus(storeId, OrderStatus.COMPLETED);
+
+        // Lazy Loading 강제 실행
+        // View에서 order.getItems() 사용하면 → 필요
+        for (Order order : orders) {
+            if (order.getItems() != null) {
+                order.getItems().size(); // ← DB에서 OrderItem 미리 가져오기 (원래 의미는 “개수 세기”지만, JPA에서는 Lazy 로딩을 강제로 실행시키는 트리거 역할)
+            }
+        }
+
+        return orders;
+    }
+
+    // 총 매출 계산
+    public int getTotalSales(Integer storeId) {
+        List<Order> orders = orderRepository.findByStoreIdAndStatus(storeId, OrderStatus.COMPLETED);
+
+        return orders.stream()
+                .mapToInt(Order::getTotalPrice)
+                .sum();
+    }
+
+    // 총 매출 계산 (원시 자바 반복문)
+    @Deprecated
+    public int getTotalSalesBasedRoop(Integer storeId) {
+        List<Order> orders = orderRepository.findByStoreIdAndStatus(storeId, OrderStatus.COMPLETED);
+
+        int totalSales = 0;
+
+        for (Order order : orders) {
+            totalSales += order.getTotalPrice();
+        }
+
+        return totalSales;
+    }
+
+
 
 
 }
