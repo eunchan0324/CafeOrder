@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Repository
+//@Repository
 public class InMemoryOrderRepository {
 
     private final List<Order> orders;
@@ -260,6 +260,41 @@ public class InMemoryOrderRepository {
         return Optional.of(order);
     }
 
+    // READ : storeId + OrderStatus로 List<Order> 조회 (람다식)
+    public List<Order> findByStoreIdAndStatus(Integer storeId, OrderStatus status) {
+        return orders.stream()
+                .filter(order -> order.getStoreId().equals(storeId) && order.getStatus().equals(status))
+                .map(order -> {
+                    List<OrderItem> items = orderItems.stream()
+                            .filter(orderItem -> orderItem.getOrderId().equals(order.getOrderId()))
+                            .collect(Collectors.toList());
+                    order.setItems(items);
+                    return order;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // READ : storeId + OrderStatus로 List<Order> 조회 (자바 반복문)
+    @Deprecated
+    public List<Order> findByStoreIdAndStatusBasedRoop(Integer storeId, OrderStatus status) {
+        List<Order> result = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.getStoreId().equals(storeId) && order.getStatus().equals(status)) {
+                // OrderItem 찾아서 설정
+                List<OrderItem> items = new ArrayList<>();
+                for (OrderItem item : orderItems) {
+                    if (item.getOrderId().equals(order.getOrderId())) {
+                        items.add(item);
+                    }
+                }
+                order.setItems(items);
+                result.add(order);
+            }
+        }
+
+        return result;
+    }
+
     // UPDATE : 주문 상태 변경
     public Order update(Order order) {
         for (Order o : orders) {
@@ -271,8 +306,6 @@ public class InMemoryOrderRepository {
         }
         return order;
     }
-
-
 
 
 

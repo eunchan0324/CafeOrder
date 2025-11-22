@@ -4,6 +4,7 @@ import com.cafe.order.common.util.UUIDUtils;
 import com.cafe.order.domain.order.dto.Order;
 import com.cafe.order.domain.order.dto.OrderItem;
 import com.cafe.order.domain.order.dto.OrderStatus;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -48,7 +49,7 @@ public class SqlOrderRepository {
 
         // 각 Order마다 OrderItem 조회
         for (Order order : orders) {
-            String itemSql = "SELECT id, menu_id, menu_name, menu_price, temperature, cup_type, options, quantity, final_price " +
+            String itemSql = "SELECT id, order_id, menu_id, menu_name, menu_price, temperature, cup_type, options, quantity, final_price " +
                     "FROM order_items WHERE order_id = ?";
             byte[] orderIdBytes = convertUUIDToBytes(order.getOrderId());
             List<OrderItem> items = jdbcTemplate.query(itemSql, orderItemRowMapper(), orderIdBytes);
@@ -85,6 +86,26 @@ public class SqlOrderRepository {
     }
 
 
+    // READ : storeId, OrderStatus로 List<Order> 조회
+    public List<Order> findByStoreIdAndStatus(Integer storeId, OrderStatus status) {
+        String sql = "SELECT order_id, customer_id, store_id, order_time, total_price, status, waiting_number " +
+                "FROM orders WHERE store_id = ? AND status = ?";
+
+        List<Order> orders = jdbcTemplate.query(sql, orderRowMapper(), storeId, status.name());
+
+        // 각 Order마다 OrderItem 조회
+        for (Order order : orders) {
+            String itemSql = "SELECT id, order_id, menu_id, menu_name, menu_price, temperature, cup_type, options, quantity, final_price " +
+                    "FROM order_items WHERE order_id = ?";
+            byte[] orderIdBytes = convertUUIDToBytes(order.getOrderId());
+            List<OrderItem> items = jdbcTemplate.query(itemSql, orderItemRowMapper(), orderIdBytes);
+            order.setItems(items);
+        }
+
+        return orders;
+    }
+
+
     // UPDATE : order -> newOrder로 변경
     public Order update(Order order) {
         String sql = "UPDATE orders " +
@@ -106,6 +127,9 @@ public class SqlOrderRepository {
 
         return order;
     }
+
+
+
 
 
     // ResultSet -> Order 변환
