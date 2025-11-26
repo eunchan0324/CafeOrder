@@ -4,6 +4,7 @@ import com.cafe.order.domain.menu.dto.Menu;
 import com.cafe.order.domain.menu.service.MenuService;
 import com.cafe.order.domain.storemenu.dto.MenuWithAvailability;
 import com.cafe.order.domain.storemenu.dto.StoreMenu;
+import com.cafe.order.domain.storemenu.repo.InMemoryStoreMenuRepository;
 import com.cafe.order.domain.storemenu.repo.JpaStoreMenuRepository;
 import com.cafe.order.domain.storemenu.repo.SqlStoreMenuRepository;
 import org.springframework.stereotype.Service;
@@ -15,13 +16,13 @@ import java.util.stream.Collectors;
 @Service
 public class StoreMenuService {
 
-//    private final JpaStoreMenuRepository storeMenuRepository;
-    private final SqlStoreMenuRepository storeMenuRepository;
-
+        private final JpaStoreMenuRepository storeMenuRepository;
+//    private final SqlStoreMenuRepository storeMenuRepository;
+//    private final InMemoryStoreMenuRepository storeMenuRepository;
 
     private final MenuService menuService;
 
-    public StoreMenuService(SqlStoreMenuRepository storeMenuRepository, MenuService menuService) {
+    public StoreMenuService(JpaStoreMenuRepository storeMenuRepository, MenuService menuService) {
         this.storeMenuRepository = storeMenuRepository;
         this.menuService = menuService;
     }

@@ -48,6 +48,7 @@ public class SellerMenuController {
 
         // 현재 판매중인 메뉴 ID 목록
         List<StoreMenu> storeMenus = storeMenuService.findByStoreId(storeId);
+
         Set<UUID> sellingMenuIds = storeMenus.stream()
                 .map(StoreMenu::getMenuId)
                 .collect(Collectors.toSet());
