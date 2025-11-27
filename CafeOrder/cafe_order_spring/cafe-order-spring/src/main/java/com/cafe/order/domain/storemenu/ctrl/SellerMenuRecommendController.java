@@ -43,10 +43,10 @@ public class SellerMenuRecommendController {
 
         // 판매중인 메뉴 목록 + 추천 타입 조히
         List<MenuWithRecommendType> sellingMenus =
-                storeMenuService.findSellingMenusWithRecommendType(storeId);
+                storeMenuService.findStoreMenusWithRecommendType(storeId);
 
         model.addAttribute("store", store);
-        model.addAttribute("menus", storeMenus);
+        model.addAttribute("menus", sellingMenus);
 
         return "seller/menu/recommend";
     }
