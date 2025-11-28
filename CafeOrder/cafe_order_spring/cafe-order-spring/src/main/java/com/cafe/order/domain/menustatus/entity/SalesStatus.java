@@ -1,4 +1,4 @@
-package com.cafe.order.domain.menu.dto;
+package com.cafe.order.domain.menu.entity;
 
 
 public enum SalesStatus {
