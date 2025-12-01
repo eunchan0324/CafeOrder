@@ -3,6 +3,7 @@ package com.cafe.order.domain.menustatus.service;
 import com.cafe.order.domain.menustatus.entity.MenuStatus;
 import com.cafe.order.domain.menustatus.entity.MenuStatusId;
 import com.cafe.order.domain.menustatus.entity.SalesStatus;
+import com.cafe.order.domain.menustatus.repo.InMemorySellerStockRepository;
 import com.cafe.order.domain.menustatus.repo.JpaSellerStockRepository;
 import com.cafe.order.domain.menustatus.repo.SqlSellerStockRepository;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,12 @@ import java.util.UUID;
 @Service
 public class SellerStockService {
 
-//    private final JpaSellerStockRepository sellerStockRepository;
-    private final SqlSellerStockRepository sellerStockRepository;
+    private final JpaSellerStockRepository sellerStockRepository;
+//    private final SqlSellerStockRepository sellerStockRepository;
 //    private final InMemorySellerStockRepository sellerStockRepository;
 
 
-    public SellerStockService(SqlSellerStockRepository sellerStockRepository) {
+    public SellerStockService(JpaSellerStockRepository sellerStockRepository) {
         this.sellerStockRepository = sellerStockRepository;
     }
 
