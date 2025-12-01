@@ -173,3 +173,35 @@ INSERT INTO store_menus (store_id, menu_id, is_available, recommend_type)
 SELECT 1, id, true, 'NONE'
 FROM menus WHERE name = '카푸치노' LIMIT 1;
 
+-- ============================
+-- MENU_STATUS 더미 데이터
+-- ============================
+
+-- 강남점(1) 아메리카노 → ON_SALE, 재고 10
+INSERT INTO menu_status (store_id, menu_id, status, stock)
+SELECT 1, id, 'ON_SALE', 10
+FROM menus
+WHERE name = '아메리카노'
+    LIMIT 1;
+
+-- 강남점(1) 카페라떼 → STOP, 재고 5
+INSERT INTO menu_status (store_id, menu_id, status, stock)
+SELECT 1, id, 'STOP', 5
+FROM menus
+WHERE name = '카페라떼'
+    LIMIT 1;
+
+-- 강남점(1) 녹차라떼 → SOLD_OUT, 재고 0
+INSERT INTO menu_status (store_id, menu_id, status, stock)
+SELECT 1, id, 'SOLD_OUT', 0
+FROM menus
+WHERE name = '녹차라떼'
+    LIMIT 1;
+
+-- 홍대점(2) 티라미수 → ON_SALE, 재고 7
+INSERT INTO menu_status (store_id, menu_id, status, stock)
+SELECT 2, id, 'ON_SALE', 7
+FROM menus
+WHERE name = '티라미수'
+    LIMIT 1;
+
