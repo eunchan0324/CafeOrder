@@ -4,6 +4,7 @@ import com.cafe.order.domain.menustatus.entity.MenuStatus;
 import com.cafe.order.domain.menustatus.entity.MenuStatusId;
 import com.cafe.order.domain.menustatus.entity.SalesStatus;
 import com.cafe.order.domain.menustatus.repo.JpaSellerStockRepository;
+import com.cafe.order.domain.menustatus.repo.SqlSellerStockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,18 +14,18 @@ import java.util.UUID;
 @Service
 public class SellerStockService {
 
-    private final JpaSellerStockRepository sellerStockRepository;
-//    private final SqlSellerStockRepository sellerStockRepository;
+//    private final JpaSellerStockRepository sellerStockRepository;
+    private final SqlSellerStockRepository sellerStockRepository;
 //    private final InMemorySellerStockRepository sellerStockRepository;
 
 
-    public SellerStockService(JpaSellerStockRepository sellerStockRepository) {
+    public SellerStockService(SqlSellerStockRepository sellerStockRepository) {
         this.sellerStockRepository = sellerStockRepository;
     }
 
 
     /**
-     * READ : storeId로 List<MenuStatus> 반환
+     * READ : storeId로 List<MenuStatus> 목록 반환
      */
     public List<MenuStatus> findByStoreId(Integer storeId) {
         return sellerStockRepository.findByIdStoreId(storeId);
@@ -40,7 +41,7 @@ public class SellerStockService {
         // 1. PK 생성
         MenuStatusId id = new MenuStatusId(storeId, menuId);
 
-        // 2. 엔티티 조회
+        // 2. 엔티티(단건) 조회
         MenuStatus ms = sellerStockRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("MenuStatus가 존재하지 않습니다. id를 확인해주세요."));
 

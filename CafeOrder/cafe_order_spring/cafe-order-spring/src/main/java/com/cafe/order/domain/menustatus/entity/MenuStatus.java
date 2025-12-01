@@ -40,6 +40,16 @@ public class MenuStatus {
     }
 
     /**
+     * SQL Repo 전용 생성자
+     */
+    public MenuStatus(MenuStatusId id, SalesStatus status, int stock) {
+        this.id = id;
+        this.status = status;
+        this.stock = stock;
+    }
+
+
+    /**
      * 재고(Stock) 증가 메서드 :
      * <p>SOLD_OUT 이고 stock > 0 이면 status를 ON_SALE로 변경</p>
      */

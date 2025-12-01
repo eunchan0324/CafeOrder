@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+//@Repository
 public interface JpaSellerStockRepository extends JpaRepository<MenuStatus, MenuStatusId> {
 
     List<MenuStatus> findByIdStoreId(Integer storeId);
