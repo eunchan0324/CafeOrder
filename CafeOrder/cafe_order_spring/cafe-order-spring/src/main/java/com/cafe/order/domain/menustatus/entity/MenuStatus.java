@@ -1,13 +1,10 @@
-package com.cafe.order.domain.menu.entity;
+package com.cafe.order.domain.menustatus.entity;
 
 import com.cafe.order.domain.menu.dto.Menu;
 import com.cafe.order.domain.store.dto.Store;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
-import java.util.UUID;
 
 
 @NoArgsConstructor
