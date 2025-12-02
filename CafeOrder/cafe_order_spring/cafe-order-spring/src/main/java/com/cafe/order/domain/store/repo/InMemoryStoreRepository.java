@@ -1,12 +1,13 @@
 package com.cafe.order.domain.store.repo;
 
 import com.cafe.order.domain.store.dto.Store;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-//@Repository
+@Repository
 public class InMemoryStoreRepository {
 
     private final List<Store> stores;
