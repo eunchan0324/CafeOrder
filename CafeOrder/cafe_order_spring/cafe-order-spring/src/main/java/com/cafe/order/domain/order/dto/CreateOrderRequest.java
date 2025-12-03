@@ -23,6 +23,4 @@ public class CreateOrderRequest {
     private List<String> cupType;
     private List<String> options;
     private List<Integer> quantity;
-
-
 }
