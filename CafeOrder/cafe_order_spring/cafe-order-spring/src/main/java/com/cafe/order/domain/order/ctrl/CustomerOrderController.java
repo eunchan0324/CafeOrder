@@ -59,7 +59,10 @@ public class CustomerOrderController {
 
     @GetMapping("/success")
     public String orderSuccess(@RequestParam UUID orderId, Model model) {
-        model.addAttribute("orderId", orderId);
+        Order order = orderService.findById(orderId);
+        Integer waitingNumber = order.getWaitingNumber();
+
+        model.addAttribute("waitingNumber", waitingNumber);
         return "customer/order/success";
     }
 }

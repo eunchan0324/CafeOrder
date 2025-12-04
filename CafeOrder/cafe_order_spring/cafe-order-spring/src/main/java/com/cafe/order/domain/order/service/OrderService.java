@@ -18,6 +18,8 @@ import com.cafe.order.domain.storemenu.repo.JpaStoreMenuRepository;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -266,25 +268,34 @@ public class OrderService {
             // 6. 주문 전체 금액 (totalPrice) 계산
             totalPrice += finalPrice;
 
-            // 8. OrderItem 리스트 생성
+            // 7. OrderItem 리스트 생성
             OrderItem orderItem = new OrderItem(null, menuId, menuName, menuPrice, req.getTemperature().get(i), req.getCupType().get(i), req.getOptions().get(i), qty, finalPrice);
 
             items.add(orderItem);
         }
 
-        // 7. Order 엔티티 생성 -> 저장
-        Order order = new Order(req.getCustomerId(), storeId, totalPrice, OrderStatus.ORDER_PLACED);
+        // 8. waiting_number 생성
+        LocalDate today = LocalDate.now();
+        Integer waiting_number = orderRepository.findMaxWaitingNumberForStoreToday(storeId, today);
+        if (waiting_number == null) {
+            waiting_number = 1;
+        } else {
+            waiting_number += 1;
+        }
+
+        // 9. Order 엔티티 생성 -> 저장
+        Order order = new Order(req.getCustomerId(), storeId, totalPrice, OrderStatus.ORDER_PLACED, waiting_number);
 
         orderRepository.save(order);
 
-        // 9. OrderItem 전체 저장
+        // 10. OrderItem 전체 저장
         for (OrderItem item : items) {
             item.setOrderId(order.getOrderId());
         }
 
         orderItemRepository.saveAll(items);
 
-        // 10. 최종 반환 값 - 성공 시 생성된 orderId만 반환
+        // 11. 최종 반환 값 - 성공 시 생성된 orderId만 반환
         return order.getOrderId();
     }
 }
