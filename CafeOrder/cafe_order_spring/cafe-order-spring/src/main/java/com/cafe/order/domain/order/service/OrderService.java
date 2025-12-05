@@ -234,8 +234,6 @@ public class OrderService {
         // 3. 각 메뉴 검증 (판매 여부 + 품절 여부)
         List<UUID> menuIds = req.getMenuId();
 
-
-
         for (int i = 0; i < menuIds.size(); i++) {
             UUID menuId = menuIds.get(i);
 

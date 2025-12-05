@@ -26,4 +26,6 @@ public class CreateOrderRequest {
     private List<CupType> cupType;
     private List<ShotOption> options;
     private List<Integer> quantity;
+
+    // todo : OrderItem에 해당되는 내용들을 객체로 묶어보기
 }

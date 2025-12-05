@@ -66,7 +66,7 @@ public class StoreMenuService {
     }
 
     /**
-     * READ : 특정 지점에서 고객에세 보여줄 수 있는(판매 가능한) 메뉴 목록 조회
+     * READ : 특정 지점에서 고객에게 보여줄 수 있는(판매 가능한) 메뉴 목록 조회
      */
     public List<CustomerMenuResponse> findSellableMenus(Integer storeId) {
         List<CustomerMenuResponse> result = new ArrayList<>();
@@ -78,7 +78,7 @@ public class StoreMenuService {
                 continue;
             }
 
-            MenuStatusId msId = new MenuStatusId(storeId, sm.getMenuId());
+            var msId = new MenuStatusId(storeId, sm.getMenuId());
             MenuStatus ms = sellerStockRepository.findById(msId)
                     .orElseThrow(() -> new IllegalStateException("MenuStatus not found for storeId=" + storeId + ", menuId=" + sm.getMenuId()));
 
@@ -90,7 +90,7 @@ public class StoreMenuService {
                     .orElseThrow(() -> new IllegalStateException("Menu not found (menuId=" + sm.getMenuId() + ")"));
 
 
-            CustomerMenuResponse response = new CustomerMenuResponse(
+            var response = new CustomerMenuResponse(
                     menu.getId(),
                     menu.getName(),
                     menu.getPrice(),

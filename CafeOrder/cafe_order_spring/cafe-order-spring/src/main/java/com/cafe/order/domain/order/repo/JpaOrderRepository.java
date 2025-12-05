@@ -20,6 +20,7 @@ public interface JpaOrderRepository extends JpaRepository<Order, UUID> {
 
     List<Order> findByStoreIdAndStatus(Integer storeId, OrderStatus orderStatus);
 
+    // todo : query DSL로 리팩토링 가능한지 확인
     @Query(
             value = "SELECT MAX(waiting_number) " +
                     "FROM orders " +
