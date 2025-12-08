@@ -38,7 +38,9 @@ public class StoreMenuService {
         this.sellerStockRepository = sellerStockRepository;
     }
 
-    // 판매자 판매 메뉴 관리 기능
+    /**
+     * 판매자 : 판매 메뉴 관리 기능
+     */
 
     /**
      * READ : 지점의 판매 메뉴 조회 (Menu 정보 포함)
@@ -127,7 +129,9 @@ public class StoreMenuService {
     }
 
 
-    // 판매자 메뉴 추천 기능
+    /**
+     * 판매자 : 메뉴 추천 기능
+     */
 
     /**
      * READ : 지점의 메뉴 + 추천 타입 조회
@@ -182,5 +186,10 @@ public class StoreMenuService {
 
 
     // TODO : 개별 메뉴 추가/삭제 (나중에 API에서 사용)
+
+
+    /**
+     * 구매자 기능
+     */
 
 }
