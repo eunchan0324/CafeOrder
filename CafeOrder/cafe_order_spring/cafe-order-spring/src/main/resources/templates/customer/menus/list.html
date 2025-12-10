@@ -25,8 +25,8 @@
                     <div>
                         <span th:text="${menu.name}">메뉴 이름</span>
 
-                        <span th:if="${menu.recommendType != null and menu.recommendType.name() == 'RECOMMENDED'}">
-                            [추천]
+                        <span th:if="${menu.recommendType != null and menu.recommendType.name() != 'NONE'}">
+                            [<span th:text="${menu.recommendType.displayName}">베스트 메뉴</span>]
                         </span>
 
                         <span th:text="${#numbers.formatInteger(menu.price, 0, 'COMMA')} + '원'">5,000원</span>
@@ -40,6 +40,10 @@
                         <a th:href="@{/customer/menus/{menuId}(menuId=${menu.menuId})}">
                             상세 보기
                         </a>
+
+                        <span th:if="${isSoldOut}">
+                            (주문 불가)
+                        </span>
                     </div>
                     <br/>
                 </div>
@@ -50,7 +54,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 </body>

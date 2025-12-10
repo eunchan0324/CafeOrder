@@ -48,7 +48,7 @@ public class CustomerMenuController {
 
         model.addAttribute("store", store);
         model.addAttribute("groupedMenus", groupedMenus);
-        model.addAttribute("allCategories", Categfory.values());
+        model.addAttribute("allCategories", Category.values());
 
         return "customer/menus/list";
     }
