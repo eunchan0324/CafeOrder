@@ -3,15 +3,18 @@ package com.cafe.order.domain.storemenu.ctrl;
 import com.cafe.order.domain.menu.dto.Category;
 import com.cafe.order.domain.store.dto.Store;
 import com.cafe.order.domain.store.service.StoreService;
+import com.cafe.order.domain.storemenu.dto.CustomerMenuDetailResponse;
 import com.cafe.order.domain.storemenu.dto.CustomerMenuResponse;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -51,6 +54,22 @@ public class CustomerMenuController {
         model.addAttribute("allCategories", Category.values());
 
         return "customer/menus/list";
+    }
+
+    /**
+     * READ : 메뉴 상세보기
+     */
+    @GetMapping("/{menuId}")
+    public String detail(@PathVariable UUID menuId, Model model) {
+        // todo : 로그인 구현 전까지 storeId, userId 임시 사용
+        Integer storeId = 1;
+        Integer userId = 1;
+
+        CustomerMenuDetailResponse menuDetail = storeMenuService.findMenuDetail(storeId, menuId, userId);
+
+        model.addAttribute("mene", menuDetail);
+
+        return "customer/menus/detail";
     }
 
 
