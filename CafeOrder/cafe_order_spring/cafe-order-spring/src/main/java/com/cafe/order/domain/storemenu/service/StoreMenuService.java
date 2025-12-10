@@ -246,5 +246,37 @@ public class StoreMenuService {
         return result;
     }
 
+    /**
+     * READ : 메뉴 상세 조회
+     */
+    public CustomerMenuDetailResponse findMenuDetail(Integer storeId, UUID menuId, Integer userId) {
+        // 1. Menu 정보 조회
+        Menu menu = menuRepository.findById(menuId)
+            .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다. menuId : " + menuId));
+
+        // 2. StoreMenu 조회
+        StoreMenu storeMenu = storeMenuRepository.findByStoreIdAndMenuId(storeId, menuId)
+            .orElseThrow(() -> new IllegalArgumentException("StoreMenu를 찾을 수 없습니다. storeId : " + storeId + ", menuId : " + menuId));
+
+        // 3. MenuStatus 조회
+        MenuStatusId msId = new MenuStatusId(storeId, menuId);
+        MenuStatus ms = sellerStockRepository.findById(msId)
+            .orElseThrow(() -> new IllegalStateException("해당 지점의 메뉴 상태를 찾을 수 없습니다."));
+
+        // 4. 찜 상태 확인 (MyMenuRepository.findByUserIdAndMenuId 호출 예정)
+        // 현재는 찜 기능 구현 전이므로, 무조건 false로 고정
+        boolean isFavorite = false;
+
+        // 5. DTO 조합 및 반환
+        return new CustomerMenuDetailResponse(
+            menu.getId(),
+            menu.getName(),
+            menu.getPrice(),
+            menu.getDescription(),
+            storeMenu.getRecommendType(),
+            ms.getStatus(),
+            isFavorite
+        );
+    }
 
 }
