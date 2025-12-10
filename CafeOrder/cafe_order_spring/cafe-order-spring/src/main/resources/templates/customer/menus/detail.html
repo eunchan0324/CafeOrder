@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${menu.name} + ' 상세'">메뉴 상세</title>
+</head>
+<body>
+
+<header>
+    <h1 th:text="${menu.name}">[메뉴 이름]</h1>
+    <span th:if="${menu.recommendType != null and menu.recommendType.name() != 'NONE'}">
+            [<span th:text="${menu.recommendType.displayName}">추천 타입</span>]
+        </span>
+</header>
+
+<hr/>
+
+<section>
+    <p th:text="${menu.description}">메뉴에 대한 자세한 설명이 들어갑니다.</p>
+    <p style="font-weight: bold;" th:text="${#numbers.formatInteger(menu.price, 0, 'COMMA')} + '원'">4,700원</p>
+</section>
+
+<hr/>
+
+<section>
+    <h3>주문 및 찜하기</h3>
+
+    <form action="/customer/my-menu/toggle" method="post">
+        <input type="hidden" name="menuId" th:value="${menu.menuId}"/>
+        <button type="submit">
+            <span th:if="${menu.isFavorite}">❤️ 찜 해제</span>
+            <span th:unless="${menu.isFavorite}">🤍 찜하기</span>
+        </button>
+    </form>
+
+    <div th:with="isSoldOut = ${menu.status.name() == 'SOLD_OUT'}">
+
+        <form th:action="@{/customer/orders/create/{menuId}(menuId=${menu.menuId})}" method="get">
+
+            <button type="submit" th:disabled="${isSoldOut}">
+                <span th:if="${isSoldOut}">[품절] 주문 불가</span>
+                <span th:unless="${isSoldOut}">주문하기</span>
+            </button>
+        </form>
+
+        <p th:if="${isSoldOut}" style="color: red;">* 현재 품절 상태입니다. 주문이 불가능합니다.</p>
+    </div>
+
+</section>
+
+</body>
+</html>

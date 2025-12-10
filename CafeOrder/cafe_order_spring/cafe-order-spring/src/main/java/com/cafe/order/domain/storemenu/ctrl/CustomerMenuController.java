@@ -67,7 +67,7 @@ public class CustomerMenuController {
 
         CustomerMenuDetailResponse menuDetail = storeMenuService.findMenuDetail(storeId, menuId, userId);
 
-        model.addAttribute("mene", menuDetail);
+        model.addAttribute("menu", menuDetail);
 
         return "customer/menus/detail";
     }
