@@ -51,6 +51,18 @@
 
 <hr/>
 
+<div th:if="${!#lists.isEmpty(cartItems)}">
+    <form th:action="@{/customer/orders}" method="post">
+        <button type="submit"
+                style="padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+            전체 주문하기
+        </button>
+    </form>
+</div>
+
+
+<hr/>
+
 <div>
     <a th:href="@{/customer/menus}">
         <button type="button">메뉴판으로 돌아가기</button>

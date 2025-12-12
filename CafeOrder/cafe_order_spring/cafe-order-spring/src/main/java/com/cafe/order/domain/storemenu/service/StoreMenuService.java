@@ -264,7 +264,7 @@ public class StoreMenuService {
             .orElseThrow(() -> new IllegalStateException("해당 지점의 메뉴 상태를 찾을 수 없습니다."));
 
         // 4. 찜 상태 확인 (MyMenuRepository.findByUserIdAndMenuId 호출 예정)
-        // 현재는 찜 기능 구현 전이므로, 무조건 false로 고정
+        // todo : 현재는 찜 기능 구현 전이므로, 무조건 false로 고정 / 수정 필요
         boolean isFavorite = false;
 
         // 5. DTO 조합 및 반환

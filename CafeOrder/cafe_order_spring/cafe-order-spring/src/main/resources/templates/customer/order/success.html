@@ -6,22 +6,19 @@
 </head>
 <body>
 
-<h1>주문이 완료되었습니다!</h1>
+<h1>주문이 성공적으로 완료되었습니다.</h1>
 <hr>
 
-<p>대기 번호:</p>
-<h2 th:text="${waitingNumber}"></h2>
+<h2>주문 정보</h2>
 
-<br>
+<h1 style="color: #4CAF50; font-size: 3em;">
+    고객님의 대기 번호: <span th:text="${waitingNumber}">15</span>번
+</h1>
 
-<a th:href="@{/customer/orders/new}">
-    새로운 주문하기
-</a>
-
-<br><br>
+<hr>
 
 <a th:href="@{/customer}">
-    메인화면으로 돌아가기
+    <button type="button">구매자 메뉴로 돌아가기</button>
 </a>
 
 </body>

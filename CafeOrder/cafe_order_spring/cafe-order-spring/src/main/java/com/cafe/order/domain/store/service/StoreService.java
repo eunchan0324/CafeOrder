@@ -32,6 +32,7 @@ public class StoreService {
     }
 
     // READ : 지점 id로 Store 반환
+    // TODO : Store 객체들을 Optional<T>로 전체 변경해주기
     public Store findById(Integer id) {
         return storeRepository.findById(id).orElse(null);
     }

@@ -24,7 +24,7 @@ public class CartService {
     /**
      * 장바구니에 항목을 추가하고 세션에 저장하는 로직
      */
-    public void addItemToCart(Integer customerId, CustomerOrderItemRequest request, HttpSession session) {
+    public void addItemToCart(String customerId, CustomerOrderItemRequest request, HttpSession session) {
         // 1. Request DTO를 이용하여 DB에서 메뉴 정보 조회
         Menu menu = menuRepository.findById(request.getMenuId())
             .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다."));
@@ -76,7 +76,7 @@ public class CartService {
     /**
      * 세션에 저장된 장바구니 항목 리스트 조회
      */
-    public List<CustomerCartItem> getCartItems(Integer customerId, HttpSession session) {
+    public List<CustomerCartItem> getCartItems(String customerId, HttpSession session) {
         String cartSessionKey = "customer_cart_" + customerId;
 
         // 세션에서 리스트를 가져와서 안전하게 형 변환
