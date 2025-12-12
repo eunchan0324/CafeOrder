@@ -1,5 +1,7 @@
 package com.cafe.order.domain.order.service;
 
+import com.cafe.order.domain.cart.dto.CustomerCartItem;
+import com.cafe.order.domain.cart.service.CartService;
 import com.cafe.order.domain.menu.dto.*;
 import com.cafe.order.domain.menu.repo.JpaMenuRepository;
 import com.cafe.order.domain.menustatus.entity.MenuStatus;
@@ -15,7 +17,9 @@ import com.cafe.order.domain.store.dto.Store;
 import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.storemenu.entity.StoreMenu;
 import com.cafe.order.domain.storemenu.repo.JpaStoreMenuRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -33,14 +37,16 @@ public class OrderService {
     private final JpaSellerStockRepository sellerStockRepository;
     private final JpaMenuRepository menuRepository;
     private final StoreService storeService;
+    private final CartService cartService;
 
-    public OrderService(JpaOrderRepository orderRepository, JpaOrderItemRepository orderItemRepository, StoreService storeService, JpaStoreMenuRepository storeMenuRepository, JpaSellerStockRepository sellerStockRepository, JpaMenuRepository menuRepository) {
+    public OrderService(JpaOrderRepository orderRepository, JpaOrderItemRepository orderItemRepository, StoreService storeService, JpaStoreMenuRepository storeMenuRepository, JpaSellerStockRepository sellerStockRepository, JpaMenuRepository menuRepository, CartService cartService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.storeService = storeService;
         this.storeMenuRepository = storeMenuRepository;
         this.sellerStockRepository = sellerStockRepository;
         this.menuRepository = menuRepository;
+        this.cartService = cartService;
     }
 
 
@@ -324,6 +330,88 @@ public class OrderService {
                 .map(CustomerOrderSummary::new) // Order -> DTO 변환
                 .collect(Collectors.toList());
     }
+
+    /**
+     * CREATE : 장바구니(세션) 데이터 기반 최종 주문을 생성하고 저장
+     */
+    @Transactional
+    public UUID createOrderFromCart(String customerId, Integer storeId, HttpSession session) {
+        List<OrderItem> items = new ArrayList<>();
+        Integer totalPrice = 0;
+
+        // 1. 장바구니 데이터 가져오기 (CartService 활용)
+        List<CustomerCartItem> cartItems = cartService.getCartItems(customerId, session);
+
+        // 2. 주문 유효성 검증 및 메뉴 상태 재확인 (재고, 품절 등)
+        for (CustomerCartItem item : cartItems) {
+            if (item == null) {
+                throw new IllegalArgumentException("유효하지 않은 장바구니입니다.");
+            }
+
+            UUID menuId = item.getMenuId();
+
+            StoreMenu sm = storeMenuRepository
+                    .findByStoreIdAndMenuId(storeId, menuId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 지점에서 판매하지 않는 메뉴입니다."));
+
+            MenuStatusId msId = new MenuStatusId(storeId, menuId);
+
+            MenuStatus ms = sellerStockRepository.findById(msId)
+                    .orElseThrow(() -> new IllegalArgumentException("MenuStatus가 존재하지 않습니다."));
+
+            if (!ms.isSellable()) {
+                throw new IllegalArgumentException("판매가 불가능한 메뉴입니다.");
+            }
+
+            Menu menu = menuRepository.findById(menuId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 메뉴입니다."));
+
+            // 3. OrderItem 리스트 생성 및 총 금액 계산
+            totalPrice += item.getFinalPrice();
+
+            OrderItem orderItem = new OrderItem(
+                    null,
+                    menuId,
+                    item.getName(),
+                    menu.getPrice(),
+                    item.getTemperature(),
+                    item.getCupType(),
+                    item.getShotOption(),
+                    item.getQuantity(),
+                    item.getFinalPrice()
+            );
+
+            items.add(orderItem);
+        }
+
+        // 4. Order 엔티티 생성 및 저장 (waiting_number 포함)
+        LocalDate today = LocalDate.now();
+        Integer waiting_number = orderRepository.findMaxWaitingNumberForStoreToday(storeId, today);
+        if (waiting_number == null) {
+            waiting_number = 1;
+        } else {
+            waiting_number += 1;
+        }
+
+        Order order = new Order(customerId, storeId, totalPrice, OrderStatus.ORDER_PLACED, waiting_number);
+
+        orderRepository.save(order);
+
+        // 5. OrderItem 엔티티 전체 저장 (Order ID 설정)
+        for (OrderItem item : items) {
+            item.setOrderId(order.getOrderId());
+        }
+
+        orderItemRepository.saveAll(items);
+
+        // 6. 장바구니 데이터 비우기 (세션에서 제거)
+        String cartSessionKey = "customer_cart_" + customerId;
+        session.removeAttribute(cartSessionKey);
+
+        // 최종 반환
+        return order.getOrderId();
+    }
+
 
 }
 

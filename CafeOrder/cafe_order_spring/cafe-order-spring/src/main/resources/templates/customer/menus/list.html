@@ -32,18 +32,17 @@
                         <span th:text="${#numbers.formatInteger(menu.price, 0, 'COMMA')} + '원'">5,000원</span>
                     </div>
 
-                    <div th:with="isSoldOut = ${menu.status.name() == 'SOLD_OUT'}">
-                        <span th:if="${isSoldOut}">
+                    <div>
+                        <span th:if="${menu.status.name() == 'SOLD_OUT'}" style="color: red;">
                             [품절]
+                        </span>
+                        <span th:if="${menu.status.name() == 'STOP'}" style="color: gray;">
+                            [판매 중지]
                         </span>
 
                         <a th:href="@{/customer/menus/{menuId}(menuId=${menu.menuId})}">
                             상세 보기
                         </a>
-
-                        <span th:if="${isSoldOut}">
-                            (주문 불가)
-                        </span>
                     </div>
                     <br/>
                 </div>
