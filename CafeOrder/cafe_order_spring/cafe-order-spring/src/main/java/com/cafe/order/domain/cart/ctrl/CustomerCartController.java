@@ -61,7 +61,11 @@ public class CustomerCartController {
 
         List<CustomerCartItem> cartItems = cartService.getCartItems(customerId, session);
 
+        // 총 금액 계산
+        Integer totalPrice = cartService.calculateTotalPrice(cartItems);
+
         model.addAttribute("cartItems", cartItems);
+        model.addAttribute("totalPrice", totalPrice);
 
         return "customer/cart/list";
     }

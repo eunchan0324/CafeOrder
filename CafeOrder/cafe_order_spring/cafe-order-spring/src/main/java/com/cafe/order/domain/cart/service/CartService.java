@@ -92,5 +92,12 @@ public class CartService {
         return new ArrayList<>();
     }
 
-
+    /**
+     * 장바구니 items 총 가격 계산 메서드
+     */
+    public Integer calculateTotalPrice(List<CustomerCartItem> cartItems) {
+        return cartItems.stream()
+                .mapToInt(CustomerCartItem::getFinalPrice)
+                .sum();
+    }
 }
