@@ -1,13 +1,13 @@
 package com.cafe.order.domain.cart.ctrl;
 
+import com.cafe.order.domain.cart.dto.CustomerCartItem;
 import com.cafe.order.domain.cart.service.CartService;
 import com.cafe.order.domain.order.dto.CustomerOrderItemRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/customer/cart")
@@ -37,7 +37,7 @@ public class CustomerCartController {
         cartService.addItemToCart(customerId, request, session);
 
         // 3. 중간 확인 페이지로 리다이렉트 (다른 메뉴 보기 / 장바구니 보기 선택지 제공)
-        return "customer/cart/added";
+        return "redirect:/customer/cart/added";
     }
 
 
@@ -47,6 +47,24 @@ public class CustomerCartController {
     @GetMapping("/added")
     public String cartAddedSuccess() {
         return "customer/cart/added-success";
+    }
+
+
+    // 아래 메서드를 CustomerCartController 클래스 { } 안에 정확히 넣으세요.
+    @GetMapping("/check-session")
+    @ResponseBody
+    public List<CustomerCartItem> checkCartSession(HttpSession session) {
+        // ... (아까 논의했던 세션 확인 로직) ...
+
+        Integer customerId = 1;
+        String cartSessionKey = "customer_cart_" + customerId;
+
+        Object cartAttribute = session.getAttribute(cartSessionKey);
+
+        if (cartAttribute instanceof List) {
+            return (List<CustomerCartItem>) cartAttribute;
+        }
+        return List.of();
     }
 
 }
