@@ -1,0 +1,37 @@
+package com.cafe.order.domain.favorite.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+@NoArgsConstructor
+@Table(name = "favorite_menu")
+@Entity
+public class FavoriteMenu {
+
+    @EmbeddedId
+    private FavoriteMenuId id;
+
+    @Column(name = "cusotmer_id", insertable = false, updatable = false)
+    private String cusotmerId;
+
+    @Column(name = "menu_id", insertable = false, updatable = false)
+    private UUID menuId;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    public FavoriteMenu(String cusotmerId, UUID menuId) {
+        this.id = new FavoriteMenuId(cusotmerId, menuId);
+        this.cusotmerId = cusotmerId;
+        this.menuId = menuId;
+        this.createdAt = LocalDateTime.now();
+    }
+}
