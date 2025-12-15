@@ -86,6 +86,6 @@ public class CustomerMenuController {
 
         favoriteMenuService.toggleFavorite(customerId, menuId);
 
-        return "redirect:/customer/menus" + menuId;
+        return "redirect:/customer/menus/" + menuId;
     }
 }
