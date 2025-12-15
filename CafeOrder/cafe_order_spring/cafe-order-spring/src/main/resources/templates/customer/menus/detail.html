@@ -25,8 +25,9 @@
 <section>
     <h3>주문 및 찜하기</h3>
 
-    <form action="/customer/my-menu/toggle" method="post">
-        <input type="hidden" name="menuId" th:value="${menu.menuId}"/>
+    <form th:action="@{/customer/menus/{menuId}/toggle-favorite(menuId=${menu.id})}"
+          method="post">
+
         <button type="submit">
             <span th:if="${menu.isFavorite}">❤️ 찜 해제</span>
             <span th:unless="${menu.isFavorite}">🤍 찜하기</span>
