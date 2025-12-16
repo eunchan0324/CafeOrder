@@ -80,16 +80,20 @@
 
         <br/>
 
-        <div th:with="isSoldOut = ${menu.status.name() == 'SOLD_OUT'}">
+        <div th:with="isUnsellable = ${menu.status.name() == 'SOLD_OUT' or menu.status.name() == 'STOP'}">
 
-            <button type="submit" th:disabled="${isSoldOut}">
-                <span th:if="${isSoldOut}">[품절] 주문 불가</span>
-                <span th:unless="${isSoldOut}">장바구니에 담기</span>
+            <button type="submit" th:disabled="${isUnsellable}">
+                <span th:if="${isUnsellable}">[판매 불가] 주문 불가</span>
+                <span th:unless="${isUnsellable}">장바구니에 담기</span>
             </button>
 
-            <p th:if="${isSoldOut}" style="color: red;">* 현재 품절 상태입니다. 주문이 불가능합니다.</p>
+            <p th:if="${menu.status.name() == 'SOLD_OUT'}" style="color: red;">
+                * 현재 품절 상태입니다. 장바구니에 담을 수 없습니다.
+            </p>
+            <p th:if="${menu.status.name() == 'STOP'}" style="color: gray;">
+                * 현재 판매 중지 상태입니다. 장바구니에 담을 수 없습니다.
+            </p>
         </div>
-
     </form>
 </section>
 
