@@ -28,6 +28,7 @@
             <th>가격</th>
             <th>카테고리</th>
             <th>관리</th>
+            <th>찜 취소</th>
         </tr>
         </thead>
         <tbody>
@@ -41,6 +42,17 @@
 
             <td>
                 <a th:href="@{/customer/menus/{menuId}(menuId=${fav.menuId})}">상세 보기</a>
+            </td>
+
+            <td style="text-align: center">
+                <form th:action="@{/customer/favorites/{menuId}/toggle(menuId=${fav.menuId}, redirect='list')}"
+                    method="post">
+
+                    <button type="submit" style="background: none; border: none; cursor: pointer; color: red; font-weight: bold; font-size: 1.2em;">
+                        &times; </button>
+
+
+                </form>
             </td>
         </tr>
         </tbody>

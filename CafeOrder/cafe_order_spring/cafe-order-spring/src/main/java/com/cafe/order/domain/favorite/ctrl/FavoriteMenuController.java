@@ -6,10 +6,7 @@ import com.cafe.order.domain.favorite.service.FavoriteMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,12 +37,20 @@ public class FavoriteMenuController {
      * POST : 찜 상태 변경
      */
     @PostMapping("/{menuId}/toggle")
-    public String toggleFavorite(@PathVariable UUID menuId) {
+    public String toggleFavorite(@PathVariable UUID menuId,
+                                 @RequestParam(defaultValue = "") String redirect) {
         // todo : 로그인 이후 수정
         String customerId = "1";
 
         favoriteMenuService.toggleFavorite(customerId, menuId);
 
+        // 리다이렉트 분기 처리
+        // 만약 리스트 페이지에서 요청했다면(redirect="list') 다시 찜 목록으로 돌아감
+        if ("list".equals(redirect)) {
+            return "redirect:/customer/favorites";
+        }
+
+        // 그 외 (상세 페이지 등)에서는 해당 메뉴 상세 페이지로 돌아감
         return "redirect:/customer/menus/" + menuId;
     }
 }
