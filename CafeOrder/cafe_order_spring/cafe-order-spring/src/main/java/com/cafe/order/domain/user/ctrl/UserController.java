@@ -39,8 +39,9 @@ public class UserController {
     @PostMapping("/admin/sellers/new")
     public String create(@RequestParam String loginId,
                          @RequestParam String password,
+                         @RequestParam String name,
                          @RequestParam Integer storeId) {
-        userService.create(loginId, password, storeId);
+        userService.create(loginId, password, name, storeId);
         return "redirect:/admin/sellers";
     }
 
@@ -73,8 +74,9 @@ public class UserController {
     @PostMapping("/admin/sellers/{id}/update")
     public String update(@PathVariable Integer id,
                          @RequestParam(required = false) String password,
+                         @RequestParam String name,
                          @RequestParam Integer storeId) {
-        userService.update(id, password, storeId);
+        userService.update(id, password, name, storeId);
         return "redirect:/admin/sellers";
     }
 

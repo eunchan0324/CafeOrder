@@ -22,6 +22,9 @@ public class User {
     @Column(nullable = false, length = 100)
     private String password;
 
+    @Column(nullable = false, length = 50)
+    private String name;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private UserRole role;
@@ -30,16 +33,18 @@ public class User {
     private Integer storeId; // Seller만 사용 (nullable)
 
     // ADMIN, CUSTOMER용 생성자
-    public User(String loginId, String password, UserRole role) {
+    public User(String loginId, String password, String name, UserRole role) {
         this.loginId = loginId;
         this.password = password;
+        this.name = name;
         this.role = role;
     }
 
     // SELLER용 생성자
-    public User(String loginId, String password, UserRole role, Integer storeId) {
+    public User(String loginId, String password, String name, UserRole role, Integer storeId) {
         this.loginId = loginId;
         this.password = password;
+        this.name = name;
         this.role = role;
         this.storeId = storeId;
     }

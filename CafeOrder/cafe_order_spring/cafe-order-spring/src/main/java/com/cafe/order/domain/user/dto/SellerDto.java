@@ -10,6 +10,7 @@ public class SellerDto {
     private Integer id;
     private String loginId;
     private String password;
+    private String name;
     private Integer storeId;
     private String storeName;
 
@@ -17,6 +18,7 @@ public class SellerDto {
         this.id = user.getId();
         this.loginId = user.getLoginId();
         this.password = user.getPassword();
+        this.name = user.getName();
         this.storeId = user.getStoreId();
         this.storeName = storeName;
     }
