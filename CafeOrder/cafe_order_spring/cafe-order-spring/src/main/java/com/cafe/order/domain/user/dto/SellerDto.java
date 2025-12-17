@@ -1,5 +1,6 @@
 package com.cafe.order.domain.user.dto;
 
+import com.cafe.order.domain.user.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -2,7 +2,7 @@ package com.cafe.order.domain.user.ctrl;
 
 import com.cafe.order.domain.store.dto.Store;
 import com.cafe.order.domain.store.service.StoreService;
-import com.cafe.order.domain.user.dto.User;
+import com.cafe.order.domain.user.entity.User;
 import com.cafe.order.domain.user.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

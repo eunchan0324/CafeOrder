@@ -3,16 +3,12 @@ package com.cafe.order.domain.user.service;
 import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.user.repo.JpaUserRepository;
 import com.cafe.order.domain.user.dto.SellerDto;
-import com.cafe.order.domain.user.dto.User;
-import com.cafe.order.domain.user.dto.UserRole;
-import com.cafe.order.domain.user.repo.SqlUserRepository;
+import com.cafe.order.domain.user.entity.User;
+import com.cafe.order.domain.user.entity.UserRole;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
