@@ -22,15 +22,15 @@ VALUES ('강남점'),
 
 
 -- 사용자 테스트 데이터
-INSERT INTO users (username, password, role, store_id)
+INSERT INTO users (login_id, password, role, store_id)
 VALUES ('admin', 'admin1234', 'ADMIN', NULL);
 
-INSERT INTO users (username, password, role, store_id)
+INSERT INTO users (login_id, password, role, store_id)
 VALUES ('seller1', 'qwer1234', 'SELLER', 1),
        ('seller2', 'qwer1234', 'SELLER', 2),
        ('seller3', 'qwer1234', 'SELLER', 3);
 
-INSERT INTO users (username, password, role, store_id)
+INSERT INTO users (login_id, password, role, store_id)
 VALUES ('customer1', 'qwer1234', 'CUSTOMER', NULL),
        ('customer2', 'qwer1234', 'CUSTOMER', NULL);
 

@@ -24,7 +24,7 @@
 
         <tr th:each="s : ${sellers}">
             <td th:text="${s.id}"></td>
-            <td th:text="${s.username}"></td>
+            <td th:text="${s.loginId}"></td>
             <td th:text="${s.password}"></td>
             <td th:text="${s.storeId} + ' - ' + ${s.storeName}"></td>
             <td>

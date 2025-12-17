@@ -37,10 +37,10 @@ public class UserController {
 
     // CREATE : 판매자 계정 생성
     @PostMapping("/admin/sellers/new")
-    public String create(@RequestParam String username,
+    public String create(@RequestParam String loginId,
                          @RequestParam String password,
                          @RequestParam Integer storeId) {
-        userService.create(username, password, storeId);
+        userService.create(loginId, password, storeId);
         return "redirect:/admin/sellers";
     }
 
