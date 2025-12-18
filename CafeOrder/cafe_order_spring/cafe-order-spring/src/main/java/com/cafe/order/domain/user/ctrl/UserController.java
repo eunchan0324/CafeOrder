@@ -2,7 +2,7 @@ package com.cafe.order.domain.user.ctrl;
 
 import com.cafe.order.domain.store.dto.Store;
 import com.cafe.order.domain.store.service.StoreService;
-import com.cafe.order.domain.user.dto.User;
+import com.cafe.order.domain.user.entity.User;
 import com.cafe.order.domain.user.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,10 +37,11 @@ public class UserController {
 
     // CREATE : 판매자 계정 생성
     @PostMapping("/admin/sellers/new")
-    public String create(@RequestParam String username,
+    public String create(@RequestParam String loginId,
                          @RequestParam String password,
+                         @RequestParam String name,
                          @RequestParam Integer storeId) {
-        userService.create(username, password, storeId);
+        userService.create(loginId, password, name, storeId);
         return "redirect:/admin/sellers";
     }
 
@@ -73,8 +74,9 @@ public class UserController {
     @PostMapping("/admin/sellers/{id}/update")
     public String update(@PathVariable Integer id,
                          @RequestParam(required = false) String password,
+                         @RequestParam String name,
                          @RequestParam Integer storeId) {
-        userService.update(id, password, storeId);
+        userService.update(id, password, name, storeId);
         return "redirect:/admin/sellers";
     }
 

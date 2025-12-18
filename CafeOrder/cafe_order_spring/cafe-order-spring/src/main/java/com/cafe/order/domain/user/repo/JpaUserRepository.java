@@ -1,7 +1,7 @@
 package com.cafe.order.domain.user.repo;
 
-import com.cafe.order.domain.user.dto.User;
-import com.cafe.order.domain.user.dto.UserRole;
+import com.cafe.order.domain.user.entity.User;
+import com.cafe.order.domain.user.entity.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

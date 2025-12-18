@@ -1,4 +1,4 @@
-package com.cafe.order.domain.user.dto;
+package com.cafe.order.domain.user.entity;
 
 public enum UserRole {
     ADMIN("관리자"),

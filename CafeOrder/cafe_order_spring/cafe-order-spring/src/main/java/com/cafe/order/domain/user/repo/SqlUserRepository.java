@@ -1,14 +1,11 @@
 package com.cafe.order.domain.user.repo;
 
-import com.cafe.order.domain.user.dto.User;
-import com.cafe.order.domain.user.dto.UserRole;
+import com.cafe.order.domain.user.entity.User;
+import com.cafe.order.domain.user.entity.UserRole;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +20,9 @@ public class SqlUserRepository {
 
     // CREATE : seller 계정 DB 추가
     public User save(User user) {
-        String sql = "INSERT INTO users (username, password, role, store_id) VALUES (?, ? ,? ,?)";
+        String sql = "INSERT INTO users (login_id, password, name, role, store_id) VALUES (?, ? ,? ,?)";
 
-        jdbcTemplate.update(sql, user.getUsername(), user.getPassword(), user.getRole().name(), user.getStoreId());
+        jdbcTemplate.update(sql, user.getLoginId(), user.getPassword(), user.getName(), user.getRole().name(), user.getStoreId());
 
         return user;
 
@@ -33,14 +30,14 @@ public class SqlUserRepository {
 
     // READ : user role로 해당 role User List 반환
     public List<User> findByRole(UserRole role) {
-        String sql = "SELECT id, username, password, role, store_id FROM users WHERE role = ?";
+        String sql = "SELECT id, login_id, password, name, role, store_id FROM users WHERE role = ?";
 
         return jdbcTemplate.query(sql, userRowMapper(), role.name()); // Enum -> 문자열로 전달
     }
 
     // READ : User id로 해당 id User 반환
     public Optional<User> findById(Integer id) {
-        String sql = "SELECT id, username, password, role, store_id FROM users WHERE id = ?";
+        String sql = "SELECT id, login_id, password, name, role, store_id FROM users WHERE id = ?";
 
         try {
             User user = jdbcTemplate.queryForObject(sql, userRowMapper(), id);
@@ -52,9 +49,9 @@ public class SqlUserRepository {
 
     // UPDATE : seller 계정 DB 수정
     public User update(User seller) {
-        String sql = "UPDATE users SET password = ?, store_id = ? WHERE id = ?";
+        String sql = "UPDATE users SET password = ?, name = ?, store_id = ? WHERE id = ?";
 
-        jdbcTemplate.update(sql, seller.getPassword(), seller.getStoreId(), seller.getId());
+        jdbcTemplate.update(sql, seller.getPassword(), seller.getName(), seller.getStoreId(), seller.getId());
 
         return seller;
     }
@@ -71,8 +68,9 @@ public class SqlUserRepository {
         return (rs, rowNum) -> {
             User user = new User();
             user.setId(rs.getInt("id"));
-            user.setUsername(rs.getString("username"));
+            user.setLoginId(rs.getString("login_id"));
             user.setPassword(rs.getString("password"));
+            user.setName(rs.getString("name"));
             user.setRole(UserRole.valueOf(rs.getString("role")));
 
             // store_id가 NULL이면 null로 설정, 아니면 값 설정 (ADMIN, CUSTOMER 고려)
