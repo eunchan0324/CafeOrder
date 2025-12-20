@@ -122,5 +122,19 @@ public class SqlUserRepository {
 //        return userRowMapper;
 //    }
 
+    /**
+     * loginId로 회원 찾기 (로그인용)
+     */
+    public Optional<User> findByLoginId(String loginId) {
+        String sql = "SELECT id, login_id, password, name, role, store_id FROM users WHERE login_id = ?";
+
+        try {
+            // queryForObject는 결과가 0개면 에러가 터지므로 try-catch 필수
+            User user = jdbcTemplate.queryForObject(sql, userRowMapper(), loginId);
+            return Optional.ofNullable(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty(); // 결과가 없으면 빈 Optional 반환
+        }
+    }
 
 }
