@@ -101,7 +101,7 @@ public class UserController {
     @GetMapping("/users/signup")
     public String signupForm(Model model) {
         model.addAttribute("signupRequest", new UserSignupRequest());
-        return "signup";
+        return "customer/signup";
     }
 
     /**
