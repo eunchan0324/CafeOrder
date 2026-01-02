@@ -7,6 +7,7 @@ import com.cafe.order.domain.menu.dto.Temperature;
 import com.cafe.order.domain.order.entity.Order;
 import com.cafe.order.domain.order.entity.OrderItem;
 import com.cafe.order.domain.order.dto.OrderStatus;
+import com.cafe.order.domain.store.entity.Store;
 import com.cafe.order.domain.user.entity.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -120,7 +121,7 @@ public class SqlOrderRepository {
 
         jdbcTemplate.update(sql,
                 order.getUser().getLoginId(),
-                order.getStoreId(),
+                order.getStore().getId(),
                 order.getOrderTime(),
                 order.getTotalPrice(),
                 order.getStatus().name(),
@@ -170,9 +171,13 @@ public class SqlOrderRepository {
             String dbCustomerId = rs.getString("customer_id");
             User fakeUser = new User();
             fakeUser.setLoginId(dbCustomerId);
-
             order.setUser(fakeUser);
-            order.setStoreId(rs.getInt("store_id"));
+
+            int dbStoreId = rs.getInt("store_id");
+            Store fakeStore = new Store();
+            fakeStore.setId(dbStoreId);
+            order.setStore(fakeStore);
+
             order.setOrderTime(rs.getTimestamp("order_time").toLocalDateTime());
             order.setTotalPrice(rs.getInt("total_price"));
             order.setStatus(OrderStatus.valueOf(rs.getString("status")));

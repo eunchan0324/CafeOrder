@@ -3,13 +3,13 @@ package com.cafe.order.domain.order.repo;
 import com.cafe.order.domain.menu.dto.CupType;
 import com.cafe.order.domain.menu.dto.ShotOption;
 import com.cafe.order.domain.menu.dto.Temperature;
+import com.cafe.order.domain.order.dto.OrderStatus;
 import com.cafe.order.domain.order.entity.Order;
 import com.cafe.order.domain.order.entity.OrderItem;
-import com.cafe.order.domain.order.dto.OrderStatus;
+import com.cafe.order.domain.store.entity.Store;
 import com.cafe.order.domain.user.entity.User;
 import com.cafe.order.domain.user.entity.UserRole;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,10 +44,14 @@ public class InMemoryOrderRepository {
         User user2 = new User("customer2", "1234", "이영희", UserRole.CUSTOMER);
         user2.setId(2);
 
-        // ===== 강남점 =====
-        orders.add(new Order(user1, 1, 5000, OrderStatus.COMPLETED, 1));
-        // OrderId는 생성자에서 랜덤생성되므로, 테스트용 ID로 강제 교체 (Setter 필요 혹은 리플렉션, 여기선 그냥 둠)
-        // 만약 특정 ID가 필요하면 setOrderId 메서드가 있다고 가정
+        Store store1 = new Store("강남점");
+        store1.setId(1); // 가짜 ID 부여
+
+        Store store2 = new Store("홍대점");
+        store2.setId(2);
+
+// ===== 강남점 (storeId: 1 -> store1 객체) =====
+        orders.add(new Order(user1, store1, 5000, OrderStatus.COMPLETED, 1)); // ✅ store1 전달
         orders.get(0).setOrderId(order1Id);
 
         orderItems.add(new OrderItem(
@@ -55,7 +59,7 @@ public class InMemoryOrderRepository {
             Temperature.ICE, CupType.DISPOSABLE, ShotOption.EXTRA, 1, 5000
         ));
 
-        orders.add(new Order(user2, 1, 11000, OrderStatus.COMPLETED, 2));
+        orders.add(new Order(user2, store1, 11000, OrderStatus.COMPLETED, 2)); // ✅ store1 전달
         orders.get(1).setOrderId(order2Id);
 
         orderItems.add(new OrderItem(
@@ -67,7 +71,7 @@ public class InMemoryOrderRepository {
             Temperature.ICE, CupType.DISPOSABLE, ShotOption.NONE, 1, 6000
         ));
 
-        orders.add(new Order(user1, 1, 6500, OrderStatus.COMPLETED, 3));
+        orders.add(new Order(user1, store1, 6500, OrderStatus.COMPLETED, 3)); // ✅ store1 전달
         orders.get(2).setOrderId(order3Id);
 
         orderItems.add(new OrderItem(
@@ -75,7 +79,7 @@ public class InMemoryOrderRepository {
             Temperature.HOT, CupType.PERSONAL, ShotOption.EXTRA, 1, 6500
         ));
 
-        orders.add(new Order(user2, 1, 4500, OrderStatus.PREPARING, 4));
+        orders.add(new Order(user2, store1, 4500, OrderStatus.PREPARING, 4)); // ✅ store1 전달
         orders.get(3).setOrderId(order4Id);
 
         orderItems.add(new OrderItem(
@@ -83,8 +87,8 @@ public class InMemoryOrderRepository {
             Temperature.HOT, CupType.STORE, ShotOption.NONE, 1, 4500
         ));
 
-        // ===== 홍대점 =====
-        orders.add(new Order(user1, 2, 10000, OrderStatus.COMPLETED, 1));
+        // ===== 홍대점 (storeId: 2 -> store2 객체) =====
+        orders.add(new Order(user1, store2, 10000, OrderStatus.COMPLETED, 1)); // ✅ store2 전달
         orders.get(4).setOrderId(order5Id);
 
         orderItems.add(new OrderItem(
@@ -124,7 +128,7 @@ public class InMemoryOrderRepository {
     public List<Order> findByStoreId(Integer storeId) {
         List<Order> result = new ArrayList<>();
         for (Order order : orders) {
-            if (order.getStoreId().equals(storeId)) {
+            if (order.getStore().getId().equals(storeId)) {
                 // OrderItem 찾아서 설정
                 List<OrderItem> items = new ArrayList<>();
                 for (OrderItem item : orderItems) {
@@ -194,7 +198,7 @@ public class InMemoryOrderRepository {
     // READ : storeId + OrderStatus로 List<Order> 조회 (람다식)
     public List<Order> findByStoreIdAndStatus(Integer storeId, OrderStatus status) {
         return orders.stream()
-                .filter(order -> order.getStoreId().equals(storeId) && order.getStatus().equals(status))
+                .filter(order -> order.getStore().getId().equals(storeId) && order.getStatus().equals(status))
                 .map(order -> {
                     List<OrderItem> items = orderItems.stream()
                             .filter(orderItem -> orderItem.getOrderId().equals(order.getOrderId()))
@@ -210,7 +214,7 @@ public class InMemoryOrderRepository {
     public List<Order> findByStoreIdAndStatusBasedRoop(Integer storeId, OrderStatus status) {
         List<Order> result = new ArrayList<>();
         for (Order order : orders) {
-            if (order.getStoreId().equals(storeId) && order.getStatus().equals(status)) {
+            if (order.getStore().getId().equals(storeId) && order.getStatus().equals(status)) {
                 // OrderItem 찾아서 설정
                 List<OrderItem> items = new ArrayList<>();
                 for (OrderItem item : orderItems) {
@@ -238,16 +242,17 @@ public class InMemoryOrderRepository {
         return order;
     }
 
-    /**
-     * 구매자용
-     */
+    // ========================
+    // 구매자용
+    // ========================
+
     /**
      * READ : 주문 목록 확인
      */
     public List<Order> findByStoreIdAndCustomerId(Integer storeId, String customerId) {
         List<Order> result = new ArrayList<>();
         for (Order order : orders) {
-            if (order.getStoreId().equals(storeId) &&
+            if (order.getStore().getId().equals(storeId) &&
                 order.getUser().getLoginId().equals(customerId)) {
 
                 // OrderItem 설정
@@ -262,7 +267,7 @@ public class InMemoryOrderRepository {
                 Order copy = new Order(
                         order.getOrderId(),
                         order.getUser(),
-                        order.getStoreId(),
+                        order.getStore(),
                         order.getOrderTime(),
                         order.getTotalPrice(),
                         order.getStatus(),

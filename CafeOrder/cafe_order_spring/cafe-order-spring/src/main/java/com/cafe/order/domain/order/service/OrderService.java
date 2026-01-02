@@ -56,9 +56,16 @@ public class OrderService {
         // 2. storeId별 그룹핑 + 집계
         Map<Integer, SalesData> salesMap = new HashMap<>();
 
+        // 나중에 DB 조회를 또 하지 않기 위해 store 이름만 따로 캐싱해둠 (JPA 장점 활용!)
+        Map<Integer, String> storeNameMap = new HashMap<>();
+
         for (Order order : orders) {
-            int storeId = order.getStoreId();
+            Store store = order.getStore();
+            int storeId = store.getId();
             int price = order.getTotalPrice();
+
+            // 가게 이름 미리 저장 (store 객체가 이미 있으니까 공짜!)
+            storeNameMap.putIfAbsent(storeId, store.getName());
 
             // 그룹핑 : storeId를 key로
             if (!salesMap.containsKey(storeId)) {
@@ -77,19 +84,17 @@ public class OrderService {
             int storeId = entry.getKey();
             SalesData data = entry.getValue();
 
-            // Store 조회
-            Store store = storeService.findById(storeId);
+            // 저장해둔 Map에서 이름만 꺼냄
+            String storeName = storeNameMap.get(storeId);
 
             // DTO 생성
             result.add(new SalesDto(
-                    store.getName(), // 지점명
+                    storeName, // 지점명
                     data.orderCount, //주문수
                     data.totalSales // 총매출
             ));
         }
-
         return result;
-
     }
 
 
@@ -304,7 +309,7 @@ public class OrderService {
         }
 
         // 9. Order 엔티티 생성 -> 저장
-        Order order = new Order(user, storeId, totalPrice, OrderStatus.ORDER_PLACED, waiting_number);
+        Order order = new Order(user, store, totalPrice, OrderStatus.ORDER_PLACED, waiting_number);
 
         orderRepository.save(order);
 
@@ -399,8 +404,12 @@ public class OrderService {
             waiting_number += 1;
         }
 
-        Order order = new Order(user, storeId, totalPrice, OrderStatus.ORDER_PLACED, waiting_number);
+        Store store = storeService.findById(storeId);
+        if (store == null) {
+            throw new IllegalArgumentException("유효하지 않은 storeId입니다.");
+        }
 
+        Order order = new Order(user, store, totalPrice, OrderStatus.ORDER_PLACED, waiting_number);
         orderRepository.save(order);
 
         // 5. OrderItem 엔티티 전체 저장 (Order ID 설정)
@@ -417,8 +426,6 @@ public class OrderService {
         // 최종 반환
         return order.getOrderId();
     }
-
-
 }
 
 // 집게용 임시 클래스
