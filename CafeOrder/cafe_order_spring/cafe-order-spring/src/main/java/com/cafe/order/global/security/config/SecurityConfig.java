@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/error").permitAll()
-                        .requestMatchers("/", "/login", "/join", "/login-proc").permitAll()
+                        .requestMatchers("/", "/login", "/users/signup", "/join", "/login-proc").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login

@@ -29,5 +29,5 @@ public abstract class BaseEntity { // 추상 클래스로 만들기 (단독으�
     private String createdBy;
 
     @LastModifiedBy // 수정자 자동 저장
-    private String updateBy;
+    private String updatedBy;
 }
