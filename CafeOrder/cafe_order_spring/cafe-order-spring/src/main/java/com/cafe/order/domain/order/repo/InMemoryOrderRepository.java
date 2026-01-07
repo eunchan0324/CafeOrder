@@ -51,50 +51,41 @@ public class InMemoryOrderRepository {
         store2.setId(2);
 
 // ===== 강남점 (storeId: 1 -> store1 객체) =====
+        // Order 생성
+        Order order1 = new Order(user1, store1, 5000, OrderStatus.COMPLETED, 1);
+        order1.setOrderId(order1Id);
+        orders.add(order1);
+
+        // OrderItem 생성
+        OrderItem item1 = new OrderItem(
+            americanoId, "아메리카노", 4500,
+            Temperature.ICE, CupType.DISPOSABLE, ShotOption.EXTRA, 1, 5000
+        );
+
+        // 연관 관계 맺기
+        order1.addOrderItem(item1);
+        orderItems.add(item1);
+
         orders.add(new Order(user1, store1, 5000, OrderStatus.COMPLETED, 1)); // ✅ store1 전달
         orders.get(0).setOrderId(order1Id);
 
-        orderItems.add(new OrderItem(
-            order1Id, americanoId, "아메리카노", 4500,
-            Temperature.ICE, CupType.DISPOSABLE, ShotOption.EXTRA, 1, 5000
-        ));
+        // Order 2
+        Order order2 = new Order(user2, store1, 11000, OrderStatus.COMPLETED, 2);
+        order2.setOrderId(order2Id);
+        orders.add(order2);
 
-        orders.add(new Order(user2, store1, 11000, OrderStatus.COMPLETED, 2)); // ✅ store1 전달
-        orders.get(1).setOrderId(order2Id);
-
-        orderItems.add(new OrderItem(
-            order2Id, latteId, "카페라떼", 5000,
+        OrderItem item2_1 = new OrderItem(
+            latteId, "카페라떼", 5000,
             Temperature.HOT, CupType.STORE, ShotOption.NONE, 1, 5000
-        ));
-        orderItems.add(new OrderItem(
-            order2Id, americanoId, "아메리카노", 4500,
+        );
+        OrderItem item2_2 = new OrderItem(
+            americanoId, "아메리카노", 4500,
             Temperature.ICE, CupType.DISPOSABLE, ShotOption.NONE, 1, 6000
-        ));
-
-        orders.add(new Order(user1, store1, 6500, OrderStatus.COMPLETED, 3)); // ✅ store1 전달
-        orders.get(2).setOrderId(order3Id);
-
-        orderItems.add(new OrderItem(
-            order3Id, latteId, "카페라떼", 5000,
-            Temperature.HOT, CupType.PERSONAL, ShotOption.EXTRA, 1, 6500
-        ));
-
-        orders.add(new Order(user2, store1, 4500, OrderStatus.PREPARING, 4)); // ✅ store1 전달
-        orders.get(3).setOrderId(order4Id);
-
-        orderItems.add(new OrderItem(
-            order4Id, americanoId, "아메리카노", 4500,
-            Temperature.HOT, CupType.STORE, ShotOption.NONE, 1, 4500
-        ));
-
-        // ===== 홍대점 (storeId: 2 -> store2 객체) =====
-        orders.add(new Order(user1, store2, 10000, OrderStatus.COMPLETED, 1)); // ✅ store2 전달
-        orders.get(4).setOrderId(order5Id);
-
-        orderItems.add(new OrderItem(
-            order5Id, latteId, "카페라떼", 5000,
-            Temperature.ICE, CupType.DISPOSABLE, ShotOption.NONE, 2, 10000
-        ));
+        );
+        order2.addOrderItem(item2_1);
+        order2.addOrderItem(item2_2);
+        orderItems.add(item2_1);
+        orderItems.add(item2_2);
     }
 
 
@@ -124,6 +115,7 @@ public class InMemoryOrderRepository {
     /**
      * 판매자용
      */
+
     // READ : storeId로 List<Order> 조회
     public List<Order> findByStoreId(Integer storeId) {
         List<Order> result = new ArrayList<>();
@@ -132,7 +124,7 @@ public class InMemoryOrderRepository {
                 // OrderItem 찾아서 설정
                 List<OrderItem> items = new ArrayList<>();
                 for (OrderItem item : orderItems) {
-                    if (item.getOrderId().equals(order.getOrderId())) {
+                    if (item.getOrder().getOrderId().equals(order.getOrderId())) {
                         items.add(item);
                     }
                 }
@@ -140,7 +132,6 @@ public class InMemoryOrderRepository {
                 result.add(order);
             }
         }
-
         return result;
     }
 
@@ -155,7 +146,7 @@ public class InMemoryOrderRepository {
         // 2. OrderItem 찾기
         if (order != null) {
             List<OrderItem> items = orderItems.stream()
-                    .filter(item -> item.getOrderId().equals(orderId))
+                    .filter(item -> item.getOrder().getOrderId().equals(orderId))
                     .collect(Collectors.toList());
             order.setItems(items);
         }
@@ -184,7 +175,7 @@ public class InMemoryOrderRepository {
         // 3. OrderItem 찾기 (orderId로 필터링)
         List<OrderItem> items = new ArrayList<>();
         for (OrderItem item : orderItems) {
-            if (item.getOrderId().equals(orderId)) {
+            if (item.getOrder().getOrderId().equals(orderId)) {
                 items.add(item);
             }
         }
@@ -201,7 +192,7 @@ public class InMemoryOrderRepository {
                 .filter(order -> order.getStore().getId().equals(storeId) && order.getStatus().equals(status))
                 .map(order -> {
                     List<OrderItem> items = orderItems.stream()
-                            .filter(orderItem -> orderItem.getOrderId().equals(order.getOrderId()))
+                            .filter(orderItem -> orderItem.getOrder().getOrderId().equals(order.getOrderId()))
                             .collect(Collectors.toList());
                     order.setItems(items);
                     return order;
@@ -218,7 +209,7 @@ public class InMemoryOrderRepository {
                 // OrderItem 찾아서 설정
                 List<OrderItem> items = new ArrayList<>();
                 for (OrderItem item : orderItems) {
-                    if (item.getOrderId().equals(order.getOrderId())) {
+                    if (item.getOrder().getOrderId().equals(order.getOrderId())) {
                         items.add(item);
                     }
                 }
@@ -258,7 +249,7 @@ public class InMemoryOrderRepository {
                 // OrderItem 설정
                 List<OrderItem> items = new ArrayList<>();
                 for (OrderItem item : orderItems) {
-                    if (item.getOrderId().equals(order.getOrderId())) {
+                    if (item.getOrder().getOrderId().equals(order.getOrderId())) {
                         items.add(item);
                     }
                 }

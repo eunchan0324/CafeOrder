@@ -90,4 +90,10 @@ public class Order extends BaseEntity {
                 .mapToInt(OrderItem::getQuantity)
                 .sum();
     }
+
+    // 편의 메서드 : 연관관계
+    public void addOrderItem(OrderItem item) {
+        this.items.add(item);
+        item.setOrder(this);
+    }
 }
