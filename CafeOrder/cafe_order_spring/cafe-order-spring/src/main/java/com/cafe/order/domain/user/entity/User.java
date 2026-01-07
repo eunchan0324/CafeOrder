@@ -1,6 +1,7 @@
 package com.cafe.order.domain.user.entity;
 
 import com.cafe.order.common.entity.BaseEntity;
+import com.cafe.order.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +31,9 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 20)
     private UserRole role;
 
-    @Column(name = "store_id")
-    private Integer storeId; // Seller만 사용 (nullable)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     // ADMIN, CUSTOMER용 생성자
     public User(String loginId, String password, String name, UserRole role) {
@@ -42,11 +44,11 @@ public class User extends BaseEntity {
     }
 
     // SELLER용 생성자
-    public User(String loginId, String password, String name, UserRole role, Integer storeId) {
+    public User(String loginId, String password, String name, UserRole role, Store store) {
         this.loginId = loginId;
         this.password = password;
         this.name = name;
         this.role = role;
-        this.storeId = storeId;
+        this.store = store;
     }
 }
