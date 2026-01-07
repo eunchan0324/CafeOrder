@@ -1,5 +1,6 @@
 package com.cafe.order.domain.user.service;
 
+import com.cafe.order.domain.store.entity.Store;
 import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.user.dto.UserSignupRequest;
 import com.cafe.order.domain.user.repo.JpaUserRepository;
@@ -69,14 +70,9 @@ public class UserService {
 
     // READ : 판매자 목록 (지점 이름 포함) (stream 람다식)
     public List<SellerDto> findAllSellerWithStoreName() {
-        List<User> sellers = userRepository.findByRole(UserRole.SELLER);
-
-        return sellers.stream()
-                .map(seller -> {
-                    String storeName = storeService.findById(seller.getStoreId()).getName();
-                    return new SellerDto((seller), storeName);
-                })
-                .collect(Collectors.toList());
+        return userRepository.findByRole(UserRole.SELLER).stream()
+            .map(SellerDto::new) // 생성자 참조 (User 객체 하나만 넘기면 끝)
+            .collect(Collectors.toList());
     }
 
     //  READ : 판매자 목록 (지점 이름 포함) (원시 자바 반복문)
@@ -101,14 +97,21 @@ public class UserService {
     // CREATE : 판매자 계정 생성
     @Transactional
     public User create(String username, String password, String name, Integer storeId) {
+        // Store 객체 조회
+        Store store = storeService.findById(storeId);
+
         String encoded = passwordEncoder.encode(password);
 
-        User user = new User(username, encoded, name, UserRole.SELLER, storeId);
+        User user = new User(username, encoded, name, UserRole.SELLER, store);
         return userRepository.save(user);
     }
 
     // UPDATE : 판매자 계정 수정
+    @Transactional
     public User update(Integer id, String password, String name, Integer storeId) {
+        // Store 객체 찾기
+        Store store = storeService.findById(storeId);
+
         User seller = userRepository.findById(id).orElse(null);
 
         if (seller == null) {
@@ -121,7 +124,7 @@ public class UserService {
         }
 
         seller.setName(name);
-        seller.setStoreId(storeId);
+        seller.setStore(store);
 
         return userRepository.save(seller); // JPA
 //        return userRepository.update(seller); // SQL, InMemory
@@ -136,10 +139,11 @@ public class UserService {
     // 이미 배정된 지점 ID 목록 (람다식)
     public List<Integer> getAssignedStoreIds() {
         return userRepository.findByRole(UserRole.SELLER).stream()
-                .map(User::getStoreId)
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
+            .map(User::getStore)
+            .filter(Objects::nonNull)
+            .map(Store::getId)
+            .distinct()
+            .collect(Collectors.toList());
     }
 
 
@@ -164,11 +168,12 @@ public class UserService {
     // 특정 판매자를 제외한 배정된 지점 ID 목록 (stream 람다식)
     public List<Integer> getAssignedStoreIdsExcept(Integer excludeSellerId) {
         return userRepository.findByRole(UserRole.SELLER).stream()
-                .filter(seller -> !seller.getId().equals(excludeSellerId))
-                .map(User::getStoreId)
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
+            .filter(seller -> !seller.getId().equals(excludeSellerId))
+            .map(User::getStore)
+            .filter(Objects::nonNull)
+            .map(Store::getId)
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     // 특정 판매자를 제외한 배정된 지점 ID 목록 (원시 자바 반목문 코드)
