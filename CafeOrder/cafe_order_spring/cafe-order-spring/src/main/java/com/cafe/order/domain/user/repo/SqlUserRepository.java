@@ -1,5 +1,6 @@
 package com.cafe.order.domain.user.repo;
 
+import com.cafe.order.domain.store.entity.Store;
 import com.cafe.order.domain.user.entity.User;
 import com.cafe.order.domain.user.entity.UserRole;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,12 +21,16 @@ public class SqlUserRepository {
 
     // CREATE : seller 계정 DB 추가
     public User save(User user) {
-        String sql = "INSERT INTO users (login_id, password, name, role, store_id) VALUES (?, ? ,? ,?)";
+        String sql = "INSERT INTO users (login_id, password, name, role, store_id) VALUES (?, ? ,? ,?, ?)";
 
-        jdbcTemplate.update(sql, user.getLoginId(), user.getPassword(), user.getName(), user.getRole().name(), user.getStoreId());
+        Integer storeId = null;
+        if (user.getStore() != null) {
+            storeId = user.getStore().getId();
+        }
+
+        jdbcTemplate.update(sql, user.getLoginId(), user.getPassword(), user.getName(), user.getRole().name(), storeId);
 
         return user;
-
     }
 
     // READ : user role로 해당 role User List 반환
@@ -51,7 +56,13 @@ public class SqlUserRepository {
     public User update(User seller) {
         String sql = "UPDATE users SET password = ?, name = ?, store_id = ? WHERE id = ?";
 
-        jdbcTemplate.update(sql, seller.getPassword(), seller.getName(), seller.getStoreId(), seller.getId());
+        // storeId 추출 (Null 체크)
+        Integer storeId = null;
+        if (seller.getStore() != null) {
+            storeId = seller.getStore().getId();
+        }
+
+        jdbcTemplate.update(sql, seller.getPassword(), seller.getName(), storeId, seller.getId());
 
         return seller;
     }
@@ -74,8 +85,14 @@ public class SqlUserRepository {
             user.setRole(UserRole.valueOf(rs.getString("role")));
 
             // store_id가 NULL이면 null로 설정, 아니면 값 설정 (ADMIN, CUSTOMER 고려)
-            Integer storeId = (Integer) rs.getObject("store_id");
-            user.setStoreId(storeId);
+            Integer storeId = rs.getObject("store_id", Integer.class);
+
+            if (storeId != null) {
+                Store fakeStore = new Store();
+                fakeStore.setId(storeId);
+
+                user.setStore(fakeStore);
+            }
 
             return user;
         };
