@@ -6,6 +6,9 @@ import com.cafe.order.domain.favorite.entity.FavoriteMenuId;
 import com.cafe.order.domain.favorite.repo.JpaFavoriteMenuRepository;
 import com.cafe.order.domain.menu.entity.Menu;
 import com.cafe.order.domain.menu.repo.JpaMenuRepository;
+import com.cafe.order.domain.user.entity.User;
+import com.cafe.order.domain.user.repo.JpaUserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Transactional
+@RequiredArgsConstructor
 @Service
 public class FavoriteMenuService {
 
@@ -23,26 +27,22 @@ public class FavoriteMenuService {
 //    private final InMemoryFavoriteMenuRepository favoriteMenuRepository;
 
     private final JpaMenuRepository menuRepository;
-
-    public FavoriteMenuService(JpaFavoriteMenuRepository favoriteMenuRepository, JpaMenuRepository menuRepository) {
-        this.favoriteMenuRepository = favoriteMenuRepository;
-        this.menuRepository = menuRepository;
-    }
+    private final JpaUserRepository userRepository;
 
     /**
      * READ: 특정 고객이 특정 메뉴를 찜했는지 여부를 조회 (메뉴 상세 화면용)
      */
     @Transactional(readOnly = true)
-    public boolean isMenuFavorite(String customerId, UUID menuId) {
-        return favoriteMenuRepository.existsById_CustomerIdAndId_MenuId(customerId, menuId);
+    public boolean isMenuFavorite(Integer userId, UUID menuId) {
+        return favoriteMenuRepository.existsByUser_IdAndMenu_Id(userId, menuId);
     }
 
     /**
      * COMMAND: 찜 상태를 토글 (찜이 되어 있으면 해제, 아니면 등록)
      */
-    public void toggleFavorite(String customerId, UUID menuId) {
+    public void toggleFavorite(Integer userId, UUID menuId) {
         // 1. 복합 키 객체 생성
-        FavoriteMenuId favoriteMenuId = new FavoriteMenuId(customerId, menuId);
+        FavoriteMenuId favoriteMenuId = new FavoriteMenuId(userId, menuId);
 
         // 2. 현재 찜 상태 확인 토글
         if (favoriteMenuRepository.existsById(favoriteMenuId)) {
@@ -50,7 +50,14 @@ public class FavoriteMenuService {
             favoriteMenuRepository.deleteById(favoriteMenuId);
         } else {
             // 2-2. 찜이 안되어있으면 등록 (INSERT)
-            FavoriteMenu newFavoriteMenu = new FavoriteMenu(customerId, menuId);
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+            Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다."));
+
+            // 생성자 : new FavoriteMenu(User, Menu)
+            FavoriteMenu newFavoriteMenu = new FavoriteMenu(user, menu);
             favoriteMenuRepository.save(newFavoriteMenu);
         }
     }
@@ -58,31 +65,19 @@ public class FavoriteMenuService {
     /**
      * READ : 고객의 찜 목록 전체 조회
      */
-    public List<FavoriteMenuResponse> favoriteMenuList(String customerId) {
+    public List<FavoriteMenuResponse> favoriteMenuList(Integer userId) {
         // 1. 해당 고객이 찜한 FavoriteMenu 엔티티 목록 조회
-        List<FavoriteMenu> favorites = favoriteMenuRepository.findById_CustomerId(customerId);
+        List<FavoriteMenu> favorites = favoriteMenuRepository.findByUser_Id(userId);
 
-        // 서비스 메서드가 List<T> 타입을 반환하도록 선언되어 있다면, 일반적으로 절대 null을 반환하지 않는 것이 가장 좋은 관례
-        // 추후 View 에서 .isEmpty() 로 해결
         if (favorites.isEmpty()) {
             return List.of();
         }
 
-        // 2. 찜된 메뉴 ID 목록 추출
-        List<UUID> menuIds = favorites.stream()
-            .map(f -> f.getId().getMenuId())
-            .collect(Collectors.toList());
-
-        // 3. 메뉴 ID 목록으로 Menu 정보 일괄 조회 (N+1 문제 방지)
-        // Map<UUID, Menu> 형태로 변환하여 쉽게 찾을 수 있도록 함
-        Map<UUID, Menu> menuMap = menuRepository.findAllById(menuIds).stream()
-            .collect(Collectors.toMap(Menu::getId, m -> m));
-
-        // 4. FavoriteMenu와 Menu 정보를 조합하여 DTO로 변환
+        // 2. DTO 변환
         return favorites.stream()
-            .filter(f -> menuMap.containsKey(f.getId().getMenuId())) // 혹시 삭제된 메뉴는 필터링
             .map(f -> {
-                Menu menu = menuMap.get(f.getId().getMenuId());
+                Menu menu = f.getMenu();
+
                 return new FavoriteMenuResponse(
                     menu.getId(),
                     menu.getName(),
@@ -91,6 +86,6 @@ public class FavoriteMenuService {
                     f.getCreatedAt()
                 );
             })
-            .collect(Collectors.toList());
+            .toList();
     }
 }

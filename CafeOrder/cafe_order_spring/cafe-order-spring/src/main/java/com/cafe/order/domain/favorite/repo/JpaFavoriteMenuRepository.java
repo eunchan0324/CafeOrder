@@ -24,4 +24,6 @@ public interface JpaFavoriteMenuRepository extends JpaRepository<FavoriteMenu, F
      * (User의 ID와 Menu의 ID를 조건으로 검사)
      */
     boolean existsByUser_IdAndMenu_Id(Integer userId, UUID menuId);
+
+    Integer user(User user);
 }
