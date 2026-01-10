@@ -186,6 +186,39 @@ public class StoreMenuService {
     }
 
 
+    // ========== 판매자 : 재고 관련 ==========
+
+    /**
+     * UPDATE : 재고/판매 상태 수정
+     */
+    @Transactional
+    public void updateStockAndStatus(Integer storeId, UUID menuId, int newStock, SalesStatus newStatus) {
+        // 1 엔티티 조회
+        StoreMenu sm = storeMenuRepository.findByStore_IdAndMenu_Id(storeId, menuId)
+            .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다."));
+
+        // 2. 재고 변경 로직
+        int currentStock = sm.getStock();
+        if (newStock > currentStock) {
+            sm.increaseStock(newStock - currentStock);
+        } else if (newStock < currentStock) {
+            sm.decreaseStock(currentStock - newStock);
+        }
+        // newStock == currentStock이면 재고 변경 없음
+
+        // 3. 상태 변경 로직
+        if (newStatus == SalesStatus.STOP) {
+            sm.stopSelling();
+        } else if (newStatus == SalesStatus.ON_SALE) {
+            // 현재 STOP 상태였다면 RESUME 호출
+            if (sm.getSalesStatus() == SalesStatus.STOP) {
+                sm.resumeSelling();
+            }
+            // 그 외(SOLD_OUT 등)는 increaseStock/decreaseStock에 의해 이미 자동 처리됨
+        }
+
+    }
+
     // TODO : 개별 메뉴 추가/삭제 (나중에 API에서 사용)
 
 
