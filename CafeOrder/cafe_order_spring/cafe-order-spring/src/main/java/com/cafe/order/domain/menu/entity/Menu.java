@@ -33,9 +33,6 @@ public class Menu extends BaseEntity {
     @Column(length = 500)
     private String description;
 
-    @Column(length = 10)
-    private String recommend;
-
     // 생성자
     public Menu(String name, Integer price, Category category) {
         this.id = UUID.randomUUID();
