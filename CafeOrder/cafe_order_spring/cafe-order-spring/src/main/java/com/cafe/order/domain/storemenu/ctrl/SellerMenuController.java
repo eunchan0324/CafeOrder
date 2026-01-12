@@ -3,10 +3,11 @@ package com.cafe.order.domain.storemenu.ctrl;
 import com.cafe.order.domain.menu.entity.Menu;
 import com.cafe.order.domain.menu.service.MenuService;
 import com.cafe.order.domain.store.entity.Store;
-import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.storemenu.entity.StoreMenu;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
+import com.cafe.order.global.security.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
@@ -24,7 +28,6 @@ public class SellerMenuController {
 
     private final StoreMenuService storeMenuService;
     private final MenuService menuService;
-    private final StoreService storeService;
 
     /**
      * READ : 판매 메뉴 관리 페이지
@@ -32,14 +35,18 @@ public class SellerMenuController {
      * - 현재 판매중인 메뉴는 체크박스 선택됨
      */
     @GetMapping
-    public String menuManage(Model model) {
-        // TODO : 실제로는 로그인한 판매자의 storeId 가져오기
-        Integer storeId = 1; // 임시로 강남점(1)
+    public String menuManage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        // 보안 체크 (비로그인, 가게가 없는 유저)
+        if (userDetails == null || userDetails.getStore() == null) {
+            return "redirect:/login";
+        }
 
-        // store 찾기
-        Store store = storeService.findById(storeId);
 
-        // 전체 메뉴 목록
+        // 로그인 정보로 store 찾기
+        Store store = userDetails.getStore();
+        Integer storeId = store.getId();
+
+        // 전체 메뉴 목록 조회
         List<Menu> allMenus = menuService.findAll();
 
         // 현재 우리 지점에 판매중인 메뉴 ID 목록 조회
@@ -82,9 +89,17 @@ public class SellerMenuController {
      * - 체크 해제된 메뉴는 판매 메뉴에서 제거
      */
     @PostMapping("/apply")
-    public String apply(@RequestParam(value = "menuIds", required = false) List<UUID> menuIds) {
-        // TODO : 실제로는 로그인한 판매자의 storeId 가져오기
-        Integer storeId = 1; // 임시
+    public String apply(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(value = "menuIds", required = false) List<UUID>menuIds) {
+
+        // 보안 체크 (비로그인, 가게가 없는 유저)
+        if (userDetails == null || userDetails.getStore() == null) {
+            return "redirect:/login";
+        }
+
+        Store store = userDetails.getStore();
+        Integer storeId = store.getId();
 
         // Service에서 일괄 업데이트 처리
         storeMenuService.updateStoreMenus(storeId, menuIds);

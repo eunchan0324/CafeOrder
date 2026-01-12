@@ -8,6 +8,7 @@ import com.cafe.order.domain.storemenu.dto.CustomerMenuDetailResponse;
 import com.cafe.order.domain.storemenu.dto.CustomerMenuResponse;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
 import com.cafe.order.global.security.dto.CustomUserDetails;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -35,9 +36,15 @@ public class CustomerMenuController {
      * READ : 지점의 전체 메뉴 + 판매 가능 여부(재고 상태) 조회
      */
     @GetMapping
-    public String storeMenuList(Model model) {
-        // TODO : 로그인 기능 이후 수정
-        Integer storeId = 1; // 임시 강남점
+    public String storeMenuList(HttpSession session, Model model) {
+        // 세션에서 지점 ID 가져오기
+        Integer storeId = (Integer) session.getAttribute("currentStoreId");
+
+        // 지점 선택 안 했으면 선택 페이지로 이동
+        if (storeId == null) {
+            return "redirect:/customer/stores/select";
+        }
+
         Store store = storeService.findById(storeId);
 
         if (store == null) {
@@ -62,6 +69,7 @@ public class CustomerMenuController {
      */
     @GetMapping("/{menuId}")
     public String detail(@AuthenticationPrincipal CustomUserDetails userDetails,
+                         HttpSession session,
                          @PathVariable UUID menuId,
                          Model model) {
 
@@ -70,8 +78,13 @@ public class CustomerMenuController {
             return "redirect:/login";
         }
 
-        // todo : 지점 선택 기능 후, storeId 리팩토링
-        Integer storeId = 1;
+        // 세션에서 지점 ID 가져오기
+        Integer storeId = (Integer) session.getAttribute("currentStoreId");
+
+        // 지점 정보 없으면 튕겨내기
+        if (storeId == null) {
+            return "redirect:/customer/stores/select";
+        }
 
         Integer userId = userDetails.getId();
 

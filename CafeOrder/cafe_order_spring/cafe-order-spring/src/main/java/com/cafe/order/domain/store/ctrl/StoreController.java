@@ -1,19 +1,17 @@
 package com.cafe.order.domain.store.ctrl;
 
 import com.cafe.order.domain.store.service.StoreService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/admin/stores")
+@RequiredArgsConstructor
 public class StoreController {
 
     private final StoreService storeService;
-
-    public StoreController(StoreService storeService) {
-        this.storeService = storeService;
-    }
 
     // CREATE : 지점 생성 폼
     @GetMapping("/new")
@@ -55,5 +53,4 @@ public class StoreController {
         storeService.delete(id);
         return "redirect:/admin/stores";
     }
-
 }
