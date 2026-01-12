@@ -24,9 +24,9 @@ public class FavoriteMenuController {
     @GetMapping
     public String favoriteMenuList(Model model) {
         // todo : 로그인 후 수정
-        String customerId = "1";
+        Integer userId = 1;
 
-        List<FavoriteMenuResponse> favorites = favoriteMenuService.favoriteMenuList(customerId);
+        List<FavoriteMenuResponse> favorites = favoriteMenuService.favoriteMenuList(userId);
 
         model.addAttribute("favorites", favorites);
 
@@ -40,9 +40,9 @@ public class FavoriteMenuController {
     public String toggleFavorite(@PathVariable UUID menuId,
                                  @RequestParam(defaultValue = "") String redirect) {
         // todo : 로그인 이후 수정
-        String customerId = "1";
+        Integer userId = 1;
 
-        favoriteMenuService.toggleFavorite(customerId, menuId);
+        favoriteMenuService.toggleFavorite(userId, menuId);
 
         // 리다이렉트 분기 처리
         // 만약 리스트 페이지에서 요청했다면(redirect="list') 다시 찜 목록으로 돌아감

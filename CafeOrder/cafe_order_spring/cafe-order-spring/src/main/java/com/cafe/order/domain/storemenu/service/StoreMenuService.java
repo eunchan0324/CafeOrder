@@ -256,13 +256,13 @@ public class StoreMenuService {
     /**
      * READ : 메뉴 상세 조회
      */
-    public CustomerMenuDetailResponse findMenuDetail(Integer storeId, UUID menuId, String customerId) {
+    public CustomerMenuDetailResponse findMenuDetail(Integer storeId, UUID menuId, Integer userId) {
         // StoreMenu 조회
         StoreMenu storeMenu = storeMenuRepository.findByStore_IdAndMenu_Id(storeId, menuId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 지점에서 판매하지 않는 메뉴입니다."));
 
         // 찜 상태 조회 (MyMenuRepository.findByUserIdAndMenuId 호출 예정)
-        boolean isFavorite = favoriteMenuService.isMenuFavorite(customerId, menuId);
+        boolean isFavorite = favoriteMenuService.isMenuFavorite(userId, menuId);
 
         Menu menu = storeMenu.getMenu();
 

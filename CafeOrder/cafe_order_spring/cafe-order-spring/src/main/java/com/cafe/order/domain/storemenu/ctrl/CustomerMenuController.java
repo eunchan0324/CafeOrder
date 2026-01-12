@@ -66,9 +66,9 @@ public class CustomerMenuController {
     public String detail(@PathVariable UUID menuId, Model model) {
         // todo : 로그인 구현 전까지 storeId, userId 임시 사용
         Integer storeId = 1;
-        String customerId = "1";
+        Integer userId = 1;
 
-        CustomerMenuDetailResponse menuDetail = storeMenuService.findMenuDetail(storeId, menuId, customerId);
+        CustomerMenuDetailResponse menuDetail = storeMenuService.findMenuDetail(storeId, menuId, userId);
 
         model.addAttribute("menu", menuDetail);
 
@@ -81,9 +81,9 @@ public class CustomerMenuController {
     @PostMapping("/{menuId}/toggle-favorite")
     public String toggleFavorite(@PathVariable UUID menuId) {
         // todo : 로그인 이후 custoemrId 수정
-        String customerId = "1";
+        Integer userId = 1;
 
-        favoriteMenuService.toggleFavorite(customerId, menuId);
+        favoriteMenuService.toggleFavorite(userId, menuId);
 
         return "redirect:/customer/menus/" + menuId;
     }
