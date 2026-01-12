@@ -32,5 +32,5 @@ public interface JpaOrderRepository extends JpaRepository<Order, UUID> {
             @Param("today") LocalDate today
     );
 
-    List<Order> findByStoreIdAndUserLoginId(Integer storeId, String loginId);
+    List<Order> findByStoreIdAndUserId(Integer storeId, Integer userId);
 }
