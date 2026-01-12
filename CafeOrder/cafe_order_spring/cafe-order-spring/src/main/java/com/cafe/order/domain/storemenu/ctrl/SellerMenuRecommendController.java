@@ -4,6 +4,7 @@ import com.cafe.order.domain.store.entity.Store;
 import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.storemenu.dto.MenuWithRecommendType;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,15 +17,11 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/seller/menus/recommend")
+@RequiredArgsConstructor
 public class SellerMenuRecommendController {
 
     private final StoreMenuService storeMenuService;
     private final StoreService storeService;
-
-    public SellerMenuRecommendController(StoreMenuService storeMenuService, StoreService storeService) {
-        this.storeMenuService = storeMenuService;
-        this.storeService = storeService;
-    }
 
     /**
      * READ : 판매 메뉴 추천 관리 페이지
@@ -61,5 +58,4 @@ public class SellerMenuRecommendController {
 
         return "redirect:/seller/menus/recommend";
     }
-
 }

@@ -1,21 +1,17 @@
 package com.cafe.order.domain.storemenu.dto;
 
 import com.cafe.order.domain.menu.entity.Menu;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class MenuWithAvailability {
     private Menu menu;
     private Boolean isAvailable;
     private RecommendType recommendType;
-
-    public MenuWithAvailability(Menu menu, Boolean isAvailable, RecommendType recommendType) {
-        this.menu = menu;
-        this.isAvailable = isAvailable;
-        this.recommendType = recommendType;
-    }
 
     // 추천 여부 확인 헬퍼 메서드
     public boolean isRecommended() {

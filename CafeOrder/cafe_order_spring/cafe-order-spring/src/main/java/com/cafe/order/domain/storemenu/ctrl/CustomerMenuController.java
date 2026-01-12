@@ -7,6 +7,9 @@ import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.storemenu.dto.CustomerMenuDetailResponse;
 import com.cafe.order.domain.storemenu.dto.CustomerMenuResponse;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
+import com.cafe.order.global.security.dto.CustomUserDetails;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,17 +24,12 @@ import java.util.stream.Collectors;
 
 @RequestMapping("/customer/menus")
 @Controller
+@RequiredArgsConstructor
 public class CustomerMenuController {
 
     private final StoreMenuService storeMenuService;
     private final StoreService storeService;
     private final FavoriteMenuService favoriteMenuService;
-
-    public CustomerMenuController(StoreMenuService storeMenuService, StoreService storeService, FavoriteMenuService favoriteMenuService) {
-        this.storeMenuService = storeMenuService;
-        this.storeService = storeService;
-        this.favoriteMenuService = favoriteMenuService;
-    }
 
     /**
      * READ : 지점의 전체 메뉴 + 판매 가능 여부(재고 상태) 조회
@@ -50,7 +48,7 @@ public class CustomerMenuController {
 
         // 카테고리 별 그룹핑
         Map<Category, List<CustomerMenuResponse>> groupedMenus = rawMenus.stream()
-            .collect(Collectors.groupingBy(CustomerMenuResponse::getCategory));
+                .collect(Collectors.groupingBy(CustomerMenuResponse::getCategory));
 
         model.addAttribute("store", store);
         model.addAttribute("groupedMenus", groupedMenus);
@@ -63,10 +61,19 @@ public class CustomerMenuController {
      * READ : 메뉴 상세보기
      */
     @GetMapping("/{menuId}")
-    public String detail(@PathVariable UUID menuId, Model model) {
-        // todo : 로그인 구현 전까지 storeId, userId 임시 사용
+    public String detail(@AuthenticationPrincipal CustomUserDetails userDetails,
+                         @PathVariable UUID menuId,
+                         Model model) {
+
+        // 비로그인 방어 로직
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        // todo : 지점 선택 기능 후, storeId 리팩토링
         Integer storeId = 1;
-        Integer userId = 1;
+
+        Integer userId = userDetails.getId();
 
         CustomerMenuDetailResponse menuDetail = storeMenuService.findMenuDetail(storeId, menuId, userId);
 
@@ -79,9 +86,13 @@ public class CustomerMenuController {
      * COMMAND: 찜 상태를 토글
      */
     @PostMapping("/{menuId}/toggle-favorite")
-    public String toggleFavorite(@PathVariable UUID menuId) {
-        // todo : 로그인 이후 custoemrId 수정
-        Integer userId = 1;
+    public String toggleFavorite(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable UUID menuId) {
+        // 비로그인 방어 로직
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        Integer userId = userDetails.getId();
 
         favoriteMenuService.toggleFavorite(userId, menuId);
 

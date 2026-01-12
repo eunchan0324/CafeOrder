@@ -2,6 +2,7 @@ package com.cafe.order.domain.storemenu.ctrl;
 
 import com.cafe.order.domain.storemenu.dto.CustomerRecommendMenuDto;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,13 +12,10 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/customer/menus/recommend")
+@RequiredArgsConstructor
 public class CustomerMenuRecommendController {
 
     private final StoreMenuService storeMenuService;
-
-    public CustomerMenuRecommendController(StoreMenuService storeMenuService) {
-        this.storeMenuService = storeMenuService;
-    }
 
     @GetMapping
     public String RecommendList(Model model) {
@@ -29,7 +27,5 @@ public class CustomerMenuRecommendController {
         model.addAttribute("recommendMenus", recommendMenus);
 
         return "customer/menus/recommendList";
-
     }
-
 }
