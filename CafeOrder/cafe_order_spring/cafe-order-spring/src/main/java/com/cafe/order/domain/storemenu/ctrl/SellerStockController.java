@@ -1,11 +1,12 @@
 package com.cafe.order.domain.storemenu.ctrl;
 
-import com.cafe.order.domain.storemenu.entity.SalesStatus;
 import com.cafe.order.domain.store.entity.Store;
-import com.cafe.order.domain.store.service.StoreService;
+import com.cafe.order.domain.storemenu.entity.SalesStatus;
 import com.cafe.order.domain.storemenu.entity.StoreMenu;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
+import com.cafe.order.global.security.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +20,21 @@ import java.util.UUID;
 public class SellerStockController {
 
     private final StoreMenuService storeMenuService;
-    private final StoreService storeService;
 
     /**
      * READ : 재고/판매 상태 조회
      */
     @GetMapping
-    public String stockManage(Model model) {
-        // TODO : 실제로는 로그인한 판매자의 storeId 가져오기
-        Integer storeId = 1; // 임시 강남점 (1)
-        Store store = storeService.findById(storeId);
+    public String stockManage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+
+        // 보안 체크 (비로그인, 가게가 없는 유저)
+        if (userDetails == null || userDetails.getStore() == null) {
+            return "redirect:/login";
+        }
+
+        // 세션으로 Store 찾기
+        Store store = userDetails.getStore();
+        Integer storeId = store.getId();
 
         List<StoreMenu> storeMenus = storeMenuService.findByStoreId(storeId);
 
@@ -42,12 +48,24 @@ public class SellerStockController {
      * UPDATE : 재고/판매 상태 일괄 수정
      */
     @PostMapping("/{menuId}/update")
-    public String updateMenuStatus(@PathVariable UUID menuId,
-                                   @RequestParam int stock,
-                                   @RequestParam SalesStatus status) {
-        // TODO : 실제로는 로그인한 판매자의 storeId 가져오기
-        Integer storeId = 1; // 임시 강남점 (1)
+    public String updateMenuStatus(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable UUID menuId,
+            @RequestParam int stock,
+            @RequestParam SalesStatus status) {
+
+        // 보안 체크 (비로그인, 가게가 없는 유저)
+        if (userDetails == null || userDetails.getStore() == null) {
+            return "redirect:/login";
+        }
+
+        // 세션으로 Store 찾기
+        Store store = userDetails.getStore();
+        Integer storeId = store.getId();
+
+        // 재고, 판매 상태 수정
         storeMenuService.updateStockAndStatus(storeId, menuId, stock, status);
+
         return "redirect:/seller/stock";
     }
 }

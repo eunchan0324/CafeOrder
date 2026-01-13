@@ -1,10 +1,11 @@
 package com.cafe.order.domain.storemenu.ctrl;
 
 import com.cafe.order.domain.store.entity.Store;
-import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.storemenu.dto.MenuWithRecommendType;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
+import com.cafe.order.global.security.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,19 +22,22 @@ import java.util.Map;
 public class SellerMenuRecommendController {
 
     private final StoreMenuService storeMenuService;
-    private final StoreService storeService;
 
     /**
      * READ : 판매 메뉴 추천 관리 페이지
      * - 판매 메뉴 목록 표시 + 현재 추천 타입 표시
      */
     @GetMapping
-    public String menuRecommendManage(Model model) {
-        // TODO : 실제로는 로그인한 판매자의 storeId 가져오기
-        Integer storeId = 1; // 임시 강남점 (1)
+    public String menuRecommendManage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
 
-        // store 찾기
-        Store store = storeService.findById(storeId);
+        // 보안 체크 (비로그인, 가게가 없는 유저)
+        if (userDetails == null || userDetails.getStore() == null) {
+            return "redirect:/login";
+        }
+
+        // 세션으로 Store 찾기
+        Store store = userDetails.getStore();
+        Integer storeId = store.getId();
 
         // 판매중인 메뉴 목록 + 추천 타입 조히
         List<MenuWithRecommendType> sellingMenus =
@@ -49,9 +53,18 @@ public class SellerMenuRecommendController {
      * UPDATE : 추천 타입 일괄 적용
      */
     @PostMapping("/apply")
-    public String recommendApply(@RequestParam Map<String, String> params) {
-        // TODO : 실제로는 세션에서 storeId 가져오기
-        Integer storeId = 1;
+    public String recommendApply(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam Map<String, String> params) {
+
+        // 보안 체크 (비로그인, 가게가 없는 유저)
+        if (userDetails == null || userDetails.getStore() == null) {
+            return "redirect:/login";
+        }
+
+        // 세션으로 Store 찾기
+        Store store = userDetails.getStore();
+        Integer storeId = store.getId();
 
         // 추천 타입 업데이트
         storeMenuService.updateRecommendTypes(storeId, params);

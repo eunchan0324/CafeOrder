@@ -2,6 +2,7 @@ package com.cafe.order.domain.storemenu.ctrl;
 
 import com.cafe.order.domain.storemenu.dto.CustomerRecommendMenuDto;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +19,13 @@ public class CustomerMenuRecommendController {
     private final StoreMenuService storeMenuService;
 
     @GetMapping
-    public String RecommendList(Model model) {
-        // todo : 임시 강남점
-        Integer storeId = 1;
+    public String recommendList(HttpSession session, Model model) {
+        // 세션에서 지점 ID 가져오기 + 지점 정보 확인
+        Integer storeId = (Integer) session.getAttribute("currentStoreId");
+
+        if (storeId == null) {
+            return "redirect:/customer/stores/select";
+        }
 
         List<CustomerRecommendMenuDto> recommendMenus = storeMenuService.findRecommendMenus(storeId);
 
