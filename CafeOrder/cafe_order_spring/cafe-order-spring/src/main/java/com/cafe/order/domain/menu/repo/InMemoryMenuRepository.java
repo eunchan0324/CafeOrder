@@ -58,7 +58,6 @@ public class InMemoryMenuRepository {
                 m.setPrice(menu.getPrice());
                 m.setCategory(menu.getCategory());
                 m.setDescription(menu.getDescription());
-                m.setRecommend(menu.getRecommend());
                 break;
             }
         }
@@ -69,9 +68,4 @@ public class InMemoryMenuRepository {
     public void deleteById(UUID uuid) {
         menus.removeIf(menu -> menu.getId().equals(uuid));
     }
-
-
-
-
-
 }
