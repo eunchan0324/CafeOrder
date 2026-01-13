@@ -33,18 +33,17 @@ public class OrderService {
 //    private final SqlOrderRepository orderRepository;
 //    private final InMemoryOrderRepository orderRepository;
 
-    private final JpaOrderItemRepository orderItemRepository;
     private final JpaStoreMenuRepository storeMenuRepository;
-    private final JpaMenuRepository menuRepository;
     private final StoreService storeService;
     private final CartService cartService;
     private final JpaUserRepository userRepository;
 
 
+    // ======= 관리자용 =======
+
     /**
-     * 관리자용
+     * READ : 전체 지점별 매출 조회
      */
-    // READ : 전체 지점별 매출 조회
     public List<SalesDto> getSalesByStore() {
         // 1. COMPLETE된 주문만 가져오기
         List<Order> orders = orderRepository.findByStatus(OrderStatus.COMPLETED);
@@ -94,18 +93,11 @@ public class OrderService {
     }
 
 
-    /**
-     * 판매자용
-     */
+    // ======= 판매자용 =======
 
     /**
      * 주문 관리 메뉴
      */
-    // READ : 특정 지점 주문 목록 조회
-    public List<Order> findByStoreId(Integer storeId) {
-        return orderRepository.findByStoreId(storeId);
-    }
-
     // READ : 특정 지점 주문 목록 조회 (COMPLETED 제외)
     public List<Order> findActiveOrderByStoreId(Integer storeId) {
         List<Order> allOrders = orderRepository.findByStoreId(storeId);
@@ -142,13 +134,13 @@ public class OrderService {
     }
 
     // UPDATE : 주문 상태 변경
-    public Order updateStatus(UUID orderId, OrderStatus newStatus) {
+    public void updateStatus(UUID orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
 
         order.setStatus(newStatus);
-        return orderRepository.save(order); // JPA
-//        return orderRepository.update(order); // SQL, InMemory
+        orderRepository.save(order); // JPA
+//      orderRepository.update(order); // SQL, InMemory
     }
 
     /**
@@ -193,124 +185,14 @@ public class OrderService {
     }
 
 
-    /**
-     * 구매자용
-     */
-    /**
-     * CREATE : 구매자의 주문 요청을 받아 Order + OrderItem 전체를 생성하고 저장
-     */
-    @Transactional
-    public UUID createOrder(CreateOrderRequest req, Integer storeId) {
-        int size = req.getMenuId().size();
-        // 전체 금액 누적용
-        int totalPrice = 0;
-
-        // OrderItem 모음
-        List<OrderItem> items = new ArrayList<>();
-
-        // 1. 입력 값 기본 검증 (userId, 리스트 길이 등)
-        if (req.getUserId() == null) {
-            throw new IllegalArgumentException("userId가 비어있습니다.");
-        }
-
-        if (size == 0) {
-            throw new IllegalArgumentException("주문 항목이 비어있습니다.");
-        }
-
-        if (req.getQuantity().size() != size ||
-                req.getTemperature().size() != size ||
-                req.getCupType().size() != size ||
-                req.getOptions().size() != size) {
-            throw new IllegalArgumentException("리스트 길이가 서로 다릅니다.");
-        }
-
-        // 2. Store 검증
-        Store store = storeService.findById(storeId);
-        if (store == null) {
-            throw new IllegalArgumentException("유효하지 않은 storeId입니다.");
-        }
-
-        // 2-1. User 조회
-        User user = userRepository.findById(req.getUserId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다: " + req.getUserId()));
-
-        // 3. 각 메뉴 검증 (판매 여부 + 품절 여부)
-        List<UUID> menuIds = req.getMenuId();
-
-        for (int i = 0; i < menuIds.size(); i++) {
-            UUID menuId = menuIds.get(i);
-            int quantity = req.getQuantity().get(i); // 주문 수량
-
-            // 3-1. storeMenu 조회 (지점에 등록된 메뉴인지 + 재고/상태 확인용)
-            StoreMenu sm = storeMenuRepository.findByStore_IdAndMenu_Id(storeId, menuId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 지점에서 판매하지 않는 메뉴입니다: " + menuId));
-
-            // 3-2. 판매 가능 여부 검증
-            if (!sm.isSellable()) {
-                throw new IllegalArgumentException("구매할 수 없는 메뉴입니다(품절/판매중지): " + sm.getMenu().getName());
-            }
-
-            // 3-3. 재고 차감
-            sm.decreaseStock(quantity);
-
-            // 4. 메뉴 정보 가져오기 (가격, 메뉴명 등)
-            Menu menu = sm.getMenu();
-            String menuName = menu.getName();
-            Integer menuPrice = menu.getPrice();
-
-            // 5. 옵션 포함 단가 계산
-            int unitPrice = OptionPriceCalculator.calculate(
-                    menu.getCategory(),
-                    menuPrice,
-                    req.getTemperature().get(i),
-                    req.getCupType().get(i),
-                    req.getOptions().get(i)
-            );
-
-            // 6. 가격 합산 및 OrderItem 생성
-            int finalPrice = unitPrice * quantity;
-            totalPrice += finalPrice;
-
-            OrderItem orderItem = new OrderItem(
-                menuId,
-                menuName,
-                menuPrice,
-                req.getTemperature().get(i),
-                req.getCupType().get(i),
-                req.getOptions().get(i),
-                quantity,
-                finalPrice
-            );
-
-            items.add(orderItem);
-        }
-
-        // 8. waiting_number 생성
-        LocalDate today = LocalDate.now();
-        Integer waiting_number = orderRepository.findMaxWaitingNumberForStoreToday(storeId, today);
-        waiting_number = (waiting_number == null) ? 1 : waiting_number + 1;
-
-        // 9. Order. OrderItem 생성 및 저장
-        Order order = new Order(user, store, totalPrice, OrderStatus.ORDER_PLACED, waiting_number);
-
-        // 연관 관계 설정 (메서드에서 item 쪽에도 order를 더해줌)
-        for (OrderItem item : items) {
-            order.addOrderItem(item);
-        }
-
-        // 저장
-        orderRepository.save(order);
-
-        // 11. 최종 반환 값 - 성공 시 생성된 orderId만 반환
-        return order.getOrderId();
-    }
+    // ======= 구매자용 =======
 
     /**
      * READ : 주문 내역 확인
      */
-    public List<CustomerOrderSummary> findOrderSummaries(Integer storeId, String customerId) {
+    public List<CustomerOrderSummary> findOrderSummaries(Integer storeId, Integer userId) {
 
-        List<Order> orders = orderRepository.findByStoreIdAndUserLoginId(storeId, customerId);
+        List<Order> orders = orderRepository.findByStoreIdAndUserId(storeId, userId);
 
         return orders.stream()
                 .map(CustomerOrderSummary::new) // Order -> DTO 변환
@@ -321,15 +203,12 @@ public class OrderService {
      * CREATE : 장바구니(세션) 데이터 기반 최종 주문을 생성하고 저장
      */
     @Transactional
-    public UUID createOrderFromCart(String customerId, Integer storeId, HttpSession session) {
+    public UUID createOrderFromCart(Integer userId, Integer storeId, HttpSession session) {
         List<OrderItem> items = new ArrayList<>();
         Integer totalPrice = 0;
 
-        // todo : customerId 자체 컨트롤러 리팩토링 이후 수정 필요
-        Integer userId = Integer.parseInt(customerId);
-
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         // Store 조회 (Order 생성에 필요)
         Store store = storeService.findById(storeId);
@@ -338,7 +217,7 @@ public class OrderService {
         }
 
         // 1. 장바구니 데이터 가져오기 (CartService 활용)
-        List<CustomerCartItem> cartItems = cartService.getCartItems(customerId, session);
+        List<CustomerCartItem> cartItems = cartService.getCartItems(userId, session);
 
         // 2. 주문 유효성 검증 및 OrderItem 생성
         for (CustomerCartItem item : cartItems) {
@@ -393,7 +272,7 @@ public class OrderService {
         orderRepository.save(order);
 
         // 6. 장바구니 데이터 비우기 (세션에서 제거)
-        String cartSessionKey = "customer_cart_" + customerId;
+        String cartSessionKey = "customer_cart_" + userId;
         session.removeAttribute(cartSessionKey);
 
         // 최종 반환

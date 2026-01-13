@@ -25,7 +25,4 @@ public class CustomerOrderItemRequest {
     private Temperature temperature;
     private CupType cupType;
     private ShotOption shotOption;
-
-
-
 }

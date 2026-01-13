@@ -6,6 +6,7 @@ import com.cafe.order.domain.store.entity.Store;
 import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.storemenu.entity.StoreMenu;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,17 +19,12 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/seller/menus")
+@RequiredArgsConstructor
 public class SellerMenuController {
 
     private final StoreMenuService storeMenuService;
     private final MenuService menuService;
     private final StoreService storeService;
-
-    public SellerMenuController(StoreMenuService storeMenuService, MenuService menuService, StoreService storeService) {
-        this.storeMenuService = storeMenuService;
-        this.menuService = menuService;
-        this.storeService = storeService;
-    }
 
     /**
      * READ : 판매 메뉴 관리 페이지
