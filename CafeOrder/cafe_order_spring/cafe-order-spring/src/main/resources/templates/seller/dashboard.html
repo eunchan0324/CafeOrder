@@ -1,11 +1,9 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>판매자 메뉴</title>
-</head>
+<head th:replace="~{fragments/header :: commonHead('판매자 메뉴')}"></head>
 <body>
 <h1>판매자 메뉴</h1>
+<div th:replace="~{fragments/nav :: topNav(${storeName})}"></div>
 
 <div>
     <h3 style="display: inline">1. 주문 관리</h3>
@@ -33,11 +31,7 @@
     <a href="/seller/menus/recommend">이동</a>
 </div>
 
-<form th:action="@{/logout}" method="post">
-    <button type="submit" style="background: none; border: none; color: purple; cursor: pointer; text-decoration: underline;">
-        로그아웃
-    </button>
-</form>
+<div th:replace="~{fragments/components :: logoutBtn}"></div>
 
 
 </body>

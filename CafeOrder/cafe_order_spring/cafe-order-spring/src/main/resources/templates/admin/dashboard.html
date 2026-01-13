@@ -1,9 +1,6 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>관리자 메뉴</title>
-</head>
+<head th:replace="~{fragments/header :: commonHead('관리자 메뉴')}"></head>
 <body>
     <h1>관리자 메뉴</h1>
 
@@ -27,11 +24,7 @@
         <a href="/admin/orders">이동</a>
     </div>
 
-    <form th:action="@{/logout}" method="post">
-        <button type="submit" style="background: none; border: none; color: purple; cursor: pointer; text-decoration: underline;">
-            로그아웃
-        </button>
-    </form>
+    <div th:replace="~{fragments/components :: logoutBtn}"></div>
 
 </body>
 </html>
