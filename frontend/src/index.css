@@ -1,68 +1,113 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* Pretendard 웹폰트 임포트 (CDN) */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* Tailwind CSS 기본 레이어 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* 글로벌 스타일 */
+@layer base {
+  * {
+    @apply antialiased;
   }
-  a:hover {
-    color: #747bff;
+
+  html {
+    @apply scroll-smooth;
   }
-  button {
-    background-color: #f9f9f9;
+
+  body {
+    @apply bg-secondary text-gray-900 font-sans;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  /* 모바일 뷰포트 높이 이슈 해결 */
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  html {
+    height: -webkit-fill-available;
+  }
+}
+
+/* 커스텀 컴포넌트 스타일 */
+@layer components {
+  /* 버튼 기본 스타일 */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-800;
+    @apply focus:ring-primary-500 shadow-md hover:shadow-lg;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-white hover:bg-accent-600;
+    @apply focus:ring-accent-500 shadow-md hover:shadow-lg;
+  }
+
+  .btn-danger {
+    @apply bg-danger text-white hover:bg-danger-600;
+    @apply focus:ring-danger-500;
+  }
+
+  /* 카드 스타일 */
+  .card {
+    @apply bg-white rounded-cozy shadow-cozy p-4;
+    @apply transition-all duration-200 hover:shadow-cozy-hover;
+  }
+
+  /* 입력 필드 스타일 */
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply transition-all duration-200;
+  }
+}
+
+/* 커스텀 유틸리티 */
+@layer utilities {
+  /* 모바일 안전 영역 (노치 대응) */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* 텍스트 말줄임 */
+  .text-ellipsis-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 스크롤바 숨김 (모바일 느낌) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 레이아웃별 컨테이너 */
+  .container-mobile {
+    @apply max-w-mobile mx-auto px-4;
+  }
+
+  .container-tablet {
+    @apply max-w-tablet mx-auto px-6;
+  }
+
+  .container-desktop {
+    @apply max-w-desktop mx-auto px-8;
   }
 }
