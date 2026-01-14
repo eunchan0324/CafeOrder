@@ -1,274 +1,353 @@
-# 🎨 카페오더 디자인 가이드
+# 🎨 My Doodle Cafe - 디자인 가이드
 
-## 디자인 컨셉
-**"Cozy & Modern"** - 따뜻하고 현대적인 카페 분위기
+## 🐕 프로젝트 컨셉
+**"My Doodle Cafe"** - 강아지와 함께하는 나이브 아트 카페
+
+### 디자인 철학
+- **Naive Design (2026 트렌드)**: 손그림 느낌, 투박하지만 따뜻한
+- **Doodle Style**: 낙서하듯 자유롭고 귀여운
+- **Character-Driven**: 강아지 캐릭터 중심의 스토리텔링
+- **Handcrafted Feel**: 정제되지 않은 손맛
 
 ---
 
-## 🎭 3가지 레이아웃 전략
+## 🎨 컬러 시스템
 
-### 1️⃣ Customer (구매자) - 모바일 앱 레이아웃
+### 기본 컬러
 
-**컨셉**: 스마트폰으로 편하게 주문하는 모바일 앱 느낌
-
-**특징**:
-- 📱 세로 스크롤 중심
-- 👆 큰 터치 영역 (최소 44px)
-- 🔽 하단 플로팅 버튼/네비게이션
-- 🌈 밝고 따뜻한 색상 (secondary 배경)
-- 📸 비주얼 중심 (메뉴 이미지 강조)
-
-**레이아웃 스펙**:
+#### Paper (배경) - `#F8F4F0`
 ```css
-- 최대 너비: 430px (중앙 정렬)
-- 패딩: 16px (좌우)
-- 하단 네비게이션 높이: 60px
-- 카드 라운드: 16px (cozy)
-- 버튼 높이: 48px 이상
+bg-paper
 ```
-
-**주요 페이지**:
-- 지점 선택
-- 메뉴판
-- 장바구니
-- 주문 내역
-
-**Tailwind 클래스 예시**:
-```tsx
-<div className="max-w-mobile mx-auto px-4 pb-nav-mobile">
-  <button className="btn btn-accent w-full h-12">
-    주문하기
-  </button>
-</div>
-```
-
----
-
-### 2️⃣ Seller (판매자) - 포스기/태블릿 레이아웃
-
-**컨셉**: 매장에서 사용하는 포스기 느낌 (가로 방향 태블릿)
-
-**특징**:
-- 📊 가로 방향 (Landscape)
-- 🖐️ 큰 터치 영역 (포스기처럼)
-- 🔢 그리드 레이아웃 (주문 목록 + 상세)
-- ⚡ 빠른 액션 버튼 (주문 승인/거부)
-- 🎯 시각적 피드백 강조
-
-**레이아웃 스펙**:
-```css
-- 최대 너비: 1024px
-- 2단 레이아웃 (주문 목록 60% + 상세 40%)
-- 상단 네비게이션 높이: 80px
-- 버튼 크기: 최소 56px x 56px
-- 아이콘 크기: 32px
-```
-
-**주요 페이지**:
-- 실시간 주문 현황
-- 주문 상세
-- 지점 정보 관리
-- 메뉴 재고 관리
-
-**Tailwind 클래스 예시**:
-```tsx
-<div className="max-w-tablet mx-auto h-screen flex">
-  <div className="w-3/5 p-6">
-    {/* 주문 목록 */}
-  </div>
-  <div className="w-2/5 bg-white p-6">
-    {/* 주문 상세 */}
-  </div>
-</div>
-```
-
----
-
-### 3️⃣ Admin (관리자) - 웹 대시보드 레이아웃
-
-**컨셉**: 전통적인 관리자 대시보드 (데스크탑)
-
-**특징**:
-- 🖥️ 좌측 사이드바 + 메인 컨텐츠
-- 📊 테이블/차트 중심
-- 🔍 검색/필터 기능 강조
-- 📈 데이터 시각화
-- 🎨 깔끔한 화이트 배경
-
-**레이아웃 스펙**:
-```css
-- 사이드바 너비: 240px (고정)
-- 메인 컨텐츠: 나머지 영역
-- 상단 헤더 높이: 64px
-- 카드 패딩: 24px
-- 테이블 행 높이: 48px
-```
-
-**주요 페이지**:
-- 대시보드 (통계)
-- 지점 관리 (CRUD)
-- 판매자 관리
-- 메뉴 관리
-- 주문 관리
-
-**Tailwind 클래스 예시**:
-```tsx
-<div className="flex h-screen">
-  <aside className="w-sidebar bg-white border-r">
-    {/* 사이드바 */}
-  </aside>
-  <main className="flex-1 overflow-auto bg-gray-50">
-    <header className="h-16 bg-white border-b px-6">
-      {/* 헤더 */}
-    </header>
-    <div className="p-6">
-      {/* 메인 컨텐츠 */}
-    </div>
-  </main>
-</div>
-```
-
----
-
-## 🎨 컬러 팔레트
-
-### Primary (Deep Teal) - `#0f766e`
-**용도**: 브랜드 컬러, 헤더, 주요 액션
-- Customer: 헤더, 탭 선택 상태
-- Seller: 주문 승인 버튼
-- Admin: 사이드바 선택 항목
-
-### Secondary (Warm Orange White) - `#fff7ed`
-**용도**: 배경색 (따뜻한 느낌)
+**용도**: 전체 배경색 (따뜻한 베이지 화이트, 종이 느낌)
 - Customer: 전체 배경
-- Seller: 비활성 영역
-- Admin: 사용 최소화 (화이트 중심)
+- Seller: 전체 배경
+- Admin: 카드 외부 배경
 
-### Accent (Bright Orange) - `#f97316`
-**용도**: 강조, 주문/결제 버튼
-- Customer: 주문하기, 장바구니 담기
-- Seller: 긴급 주문 알림
-- Admin: 중요 액션 (생성, 저장)
-
-### Danger (Red) - `#ef4444`
-**용도**: 삭제, 거부, 품절
-- Customer: 품절 표시
-- Seller: 주문 거부
-- Admin: 삭제 버튼
-
-### Success (Green) - `#22c55e`
-**용도**: 완료, 성공
-- Customer: 주문 완료
-- Seller: 주문 승인
-- Admin: 성공 메시지
-
----
-
-## 📐 간격 시스템
-
+#### Ink (메인 블랙) - `#18181B`
+```css
+text-ink, border-ink, bg-ink
 ```
-xs:  4px   (0.5rem)
-sm:  8px   (1rem)
-md:  16px  (2rem)
-lg:  24px  (3rem)
-xl:  32px  (4rem)
+**용도**: 텍스트, 테두리, 버튼 (100% 검정보다 부드러운 먹색)
+- 모든 텍스트
+- 카드/버튼 테두리 (2px)
+- Primary 버튼 배경
+
+#### Crayon (강조) - `#F97316`
+```css
+bg-crayon, text-crayon, border-crayon
+hover:bg-crayon-hover
+```
+**용도**: 주문하기, CTA 버튼 (크레파스로 칠한 듯한 오렌지)
+- 주문하기 버튼
+- 장바구니 담기
+- 중요한 액션
+
+### 추가 컬러 (Doodle Palette)
+
+```css
+bg-doodle-yellow   (#FDE047) - 형광펜 노랑
+bg-doodle-pink     (#FB7185) - 크레파스 핑크
+bg-doodle-blue     (#60A5FA) - 크레파스 블루
+bg-doodle-green    (#4ADE80) - 크레파스 그린
 ```
 
-**레이아웃별 권장 패딩**:
-- Customer: 16px (모바일 최적화)
-- Seller: 24px (터치 영역 확보)
-- Admin: 24px (정보 밀도 높음)
+**용도**: 
+- 강조 표시
+- 카테고리 구분
+- 스티커/뱃지 효과
 
 ---
 
 ## 🔤 타이포그래피
 
 ### 폰트 패밀리
-**Pretendard** (웹폰트, CDN)
-- 가독성 우수
-- 한글 최적화
-- 다양한 굵기 지원
 
-### 폰트 크기
+#### 1. KCC임권택체 (타이틀용)
+```css
+font-doodle
+```
+**특징**: 붓글씨 느낌의 투박하고 힘있는 서체
+**용도**:
+- 브랜드 로고 (My Doodle Cafe)
+- 페이지 메인 타이틀
+- 섹션 헤딩
+- 강조하고 싶은 문구
+
+**사용 예시**:
+```tsx
+<h1 className="font-doodle text-4xl">My Doodle Cafe</h1>
+```
+
+#### 2. Pretendard (본문용)
+```css
+font-sans
+```
+**특징**: 가독성 좋은 산세리프
+**용도**:
+- 본문 텍스트
+- 버튼 텍스트
+- 설명/캡션
+- 폼 입력 필드
+
+---
+
+### 폰트 크기 시스템
 
 **Customer (모바일)**:
 ```
-제목 (H1): 24px (font-bold)
-부제목 (H2): 20px (font-semibold)
-본문: 16px (font-normal)
-캡션: 14px (text-gray-600)
+브랜드: font-doodle text-3xl (30px)
+페이지 제목: font-doodle text-2xl (24px)
+섹션 제목: font-sans text-lg font-semibold (18px)
+본문: font-sans text-base (16px)
+캡션: font-sans text-sm text-ink/70 (14px)
 ```
 
 **Seller (태블릿)**:
 ```
-제목: 28px (font-bold)
-부제목: 22px (font-semibold)
-본문: 18px (font-normal)
+페이지 제목: font-doodle text-3xl (30px)
+카드 제목: font-sans text-xl font-bold (20px)
+본문: font-sans text-lg (18px)
+버튼: font-sans text-base font-medium (16px)
 ```
 
 **Admin (데스크탑)**:
 ```
-페이지 제목: 32px (font-bold)
-섹션 제목: 20px (font-semibold)
-본문: 16px (font-normal)
-테이블: 14px (font-normal)
+페이지 제목: font-doodle text-4xl (36px)
+섹션 제목: font-sans text-2xl font-bold (24px)
+본문: font-sans text-base (16px)
+테이블: font-sans text-sm (14px)
 ```
 
 ---
 
-## 🧩 공통 컴포넌트 스타일
+## 🎭 3가지 레이아웃 전략
+
+### 1️⃣ Customer (구매자) - 모바일 낙서장 느낌
+
+**컨셉**: 스마트폰 메모장에 낙서하듯 자유롭고 귀여운
+
+**특징**:
+- 📱 세로 스크롤
+- 🖍️ 손그림 테두리 (border-2 border-ink)
+- 🐕 강아지 캐릭터 곳곳에 배치
+- 🎨 밝고 따뜻한 paper 배경
+- 💭 말풍선 스타일 카드
+
+**레이아웃 스펙**:
+```css
+max-w-mobile (430px)
+bg-paper
+px-4
+pb-nav-mobile (60px)
+```
+
+**버튼 스타일**:
+```tsx
+<button className="btn btn-crayon w-full">
+  🛒 주문하기
+</button>
+```
+
+**카드 스타일**:
+```tsx
+<div className="card">
+  {/* border-2 border-ink + shadow-doodle */}
+</div>
+```
+
+---
+
+### 2️⃣ Seller (판매자) - 포스기 낙서 보드
+
+**컨셉**: 매장 키친 보드에 주문 메모하듯
+
+**특징**:
+- 📊 가로 2단 레이아웃
+- 🖐️ 큰 터치 영역
+- 📋 주문 메모 카드 스타일
+- ⚡ 빠른 액션 (승인/거부)
+- 🎯 시각적 상태 구분 (색상 코딩)
+
+**레이아웃 스펙**:
+```css
+max-w-tablet (1024px)
+h-screen flex
+bg-paper
+```
+
+**주문 카드**:
+```tsx
+<div className="bg-white border-2 border-ink shadow-doodle p-6">
+  <h3 className="font-doodle text-xl">주문 #001</h3>
+  {/* ... */}
+</div>
+```
+
+---
+
+### 3️⃣ Admin (관리자) - 웹 대시보드 (깔끔)
+
+**컨셉**: 전통적 대시보드이지만 Doodle 요소 가미
+
+**특징**:
+- 🖥️ 사이드바 + 메인
+- 📊 테이블/차트
+- 🎨 Paper 배경 + White 카드
+- 📈 데이터 중심
+- 🖍️ 아이콘에 Doodle 느낌
+
+**레이아웃 스펙**:
+```css
+flex h-screen bg-paper
+sidebar: w-sidebar bg-white border-r-2 border-ink
+main: flex-1 bg-paper
+```
+
+**카드**:
+```tsx
+<div className="bg-white border-2 border-ink rounded-lg p-6">
+  <h2 className="font-doodle text-2xl">통계</h2>
+  {/* ... */}
+</div>
+```
+
+---
+
+## 🧩 컴포넌트 스타일 가이드
 
 ### 버튼
 
-**Customer**:
+#### Primary (기본)
 ```tsx
-<button className="btn btn-accent w-full h-12 text-base">
-  주문하기
+<button className="btn btn-primary">
+  확인
+</button>
+```
+**스타일**: 먹색 배경 + 흰색 텍스트 + doodle 그림자
+
+#### Crayon (강조)
+```tsx
+<button className="btn btn-crayon">
+  🎨 주문하기
+</button>
+```
+**스타일**: 오렌지 배경 + 흰색 텍스트 + doodle 그림자
+**호버**: 클릭하면 그림자 사라지며 살짝 이동 (누르는 느낌)
+
+#### Danger (삭제/거부)
+```tsx
+<button className="btn btn-danger">
+  삭제
 </button>
 ```
 
-**Seller**:
-```tsx
-<button className="btn btn-primary h-14 px-8 text-lg">
-  승인
-</button>
-```
-
-**Admin**:
-```tsx
-<button className="btn btn-primary h-10 px-6 text-sm">
-  저장
-</button>
-```
+---
 
 ### 카드
 
-**Customer**:
+#### 기본 카드
 ```tsx
-<div className="card hover:shadow-cozy-hover cursor-pointer">
-  {/* 메뉴 카드 */}
+<div className="card">
+  {/* 내용 */}
+</div>
+```
+**스타일**:
+- `bg-white`
+- `border-2 border-ink`
+- `shadow-doodle` (4px 4px 검정 그림자)
+- `hover`: 살짝 이동하며 그림자 사라짐
+
+#### 메뉴 카드 (Customer)
+```tsx
+<div className="card cursor-pointer">
+  <img src="..." className="rounded-lg mb-2" />
+  <h3 className="font-sans text-lg font-semibold">아메리카노</h3>
+  <p className="text-sm text-ink/70">진한 에스프레소</p>
+  <div className="flex items-center justify-between mt-3">
+    <span className="font-doodle text-xl">₩4,500</span>
+    <button className="btn btn-crayon">담기</button>
+  </div>
 </div>
 ```
 
-**Seller**:
-```tsx
-<div className="bg-white rounded-lg shadow-lg p-6">
-  {/* 주문 카드 */}
-</div>
-```
-
-**Admin**:
-```tsx
-<div className="bg-white rounded-lg border border-gray-200 p-6">
-  {/* 통계 카드 */}
-</div>
-```
+---
 
 ### 입력 필드
 
-**모든 레이아웃 공통**:
 ```tsx
-<input className="input" placeholder="검색어 입력" />
+<input 
+  type="text"
+  placeholder="이메일" 
+  className="input"
+/>
+```
+**스타일**:
+- `border-2 border-ink`
+- `focus`: 크레파스 컬러 테두리
+
+---
+
+### 배지/스티커
+
+```tsx
+<span className="inline-block px-3 py-1 bg-doodle-yellow border-2 border-ink rounded-full text-sm font-semibold">
+  인기 🔥
+</span>
+```
+
+---
+
+## 🐕 캐릭터 사용 가이드
+
+### 강아지 캐릭터 PNG 배치
+
+**사용 위치**:
+1. **랜딩 페이지**: 메인 히어로에 큰 강아지
+2. **빈 상태**: 장바구니 비었을 때 "텅~" 표정
+3. **로딩**: 달리는 강아지 애니메이션
+4. **성공**: 꼬리 흔드는 강아지
+5. **에러**: 슬픈 표정 강아지
+6. **장식**: 페이지 모서리에 작게
+
+**크기 가이드**:
+```css
+w-16 h-16   - 아이콘용
+w-32 h-32   - 일반 장식
+w-48 h-48   - 빈 상태
+w-64 h-64   - 히어로
+```
+
+---
+
+## 🎨 종이 질감 배경
+
+### 현재 설정
+```css
+background: #F8F4F0; /* 단색 */
+```
+
+### 옵션 1: CSS 노이즈 텍스처 (추천)
+```css
+/* index.css에 추가 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg...%3E");
+  opacity: 0.05;
+  pointer-events: none;
+}
+```
+
+### 옵션 2: 이미지 텍스처
+```css
+background: #F8F4F0 url('/assets/paper-texture.png');
+background-size: 400px 400px;
+opacity: 0.03;
 ```
 
 ---
@@ -276,73 +355,124 @@ xl:  32px  (4rem)
 ## 📱 반응형 가이드
 
 ### Breakpoints
-
 ```js
-mobile:  375px   // Customer 기본
-tablet:  768px   // Seller 기본
-desktop: 1024px  // Admin 기본
+mobile:  375px   // Customer
+tablet:  768px   // Seller
+desktop: 1024px  // Admin
 wide:    1440px  // Admin 와이드
 ```
 
-### 사용 예시
-
+### 예시
 ```tsx
 <div className="
-  grid grid-cols-1           // 모바일: 1열
-  tablet:grid-cols-2         // 태블릿: 2열
-  desktop:grid-cols-3        // 데스크탑: 3열
+  grid grid-cols-1
+  tablet:grid-cols-2
+  desktop:grid-cols-3
 ">
-  {/* 카드 목록 */}
+  {/* 카드들 */}
 </div>
 ```
 
 ---
 
-## ✅ 개발 시 체크리스트
+## ✨ 애니메이션 가이드
 
-### 공통
-- [ ] Pretendard 폰트 로드 확인
-- [ ] 색상은 tailwind.config.js의 커스텀 컬러 사용
-- [ ] 버튼은 `.btn` 클래스 활용
-- [ ] 카드는 `.card` 클래스 또는 커스텀 스타일
+### Doodle 버튼 효과
+```css
+/* 이미 .btn에 적용됨 */
+hover:translate-x-1 hover:translate-y-1 hover:shadow-none
+transition-all duration-150
+```
 
-### Customer (모바일)
-- [ ] 최대 너비 430px 제한
-- [ ] 하단 플로팅 요소 고려 (pb-nav-mobile)
-- [ ] 터치 영역 최소 44px
-- [ ] 세이프 에어리어 대응 (노치)
-- [ ] secondary 배경색 사용
+### 카드 호버
+```css
+/* 이미 .card에 적용됨 */
+hover:translate-x-1 hover:translate-y-1 hover:shadow-none
+```
 
-### Seller (태블릿)
-- [ ] 가로 방향 레이아웃
-- [ ] 2단 구조 (목록 + 상세)
-- [ ] 터치 영역 최소 56px
-- [ ] 시각적 피드백 명확히
-
-### Admin (데스크탑)
-- [ ] 사이드바 + 메인 레이아웃
-- [ ] 테이블 스타일 일관성
-- [ ] 마우스 호버 효과
-- [ ] 화이트 배경 중심
+### 페이지 전환 (나중에)
+```tsx
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3 }}
+>
+```
 
 ---
 
 ## 🎯 디자인 원칙
 
-1. **일관성**: 같은 레이아웃 내에서는 동일한 패턴 유지
-2. **접근성**: 색상 대비 4.5:1 이상, 키보드 네비게이션 지원
-3. **성능**: 불필요한 애니메이션 최소화
-4. **반응성**: 각 디바이스에 최적화된 경험 제공
-5. **명확성**: 사용자가 다음 액션을 쉽게 파악할 수 있도록
+1. **손그림 느낌 유지**
+   - 완벽한 정렬보다 자연스러움
+   - border-2로 투박한 테두리
+   - shadow-doodle로 입체감
+
+2. **따뜻함과 친근함**
+   - Paper 배경으로 부드러움
+   - 강아지 캐릭터로 친근함
+   - 크레파스 컬러로 밝음
+
+3. **가독성 우선**
+   - 본문은 Pretendard (깔끔)
+   - 충분한 대비 (ink vs paper)
+   - 적절한 여백
+
+4. **재미 요소**
+   - 이모지 활용 🐕☕🎨
+   - 강아지 캐릭터 곳곳에
+   - 말풍선, 스티커 효과
+
+5. **일관성**
+   - 같은 컴포넌트는 같은 스타일
+   - 통일된 간격 시스템
+   - 통일된 컬러 사용
 
 ---
 
-## 📚 참고 자료
+## 📋 체크리스트
 
-- Tailwind CSS 공식 문서: https://tailwindcss.com
-- Pretendard 폰트: https://github.com/orioncactus/pretendard
-- 컬러 팔레트 도구: https://coolors.co
+### 컴포넌트 개발 시
+- [ ] font-doodle (타이틀) / font-sans (본문) 구분
+- [ ] border-2 border-ink 적용
+- [ ] shadow-doodle 그림자
+- [ ] hover 시 translate 효과
+- [ ] bg-paper 배경 (또는 bg-white)
+- [ ] 강아지 캐릭터 배치 고려
+
+### 페이지 개발 시
+- [ ] 레이아웃에 맞는 max-width
+- [ ] 적절한 padding/margin
+- [ ] 반응형 breakpoint 확인
+- [ ] 이모지로 재미 요소 추가
+- [ ] 빈 상태에 캐릭터 배치
 
 ---
 
-**⚠️ 중요**: 모든 개발 시 이 디자인 가이드를 참고하세요!
+## 🎨 컬러 참고
+
+```
+Paper:  #F8F4F0  ░░░░░░ (따뜻한 베이지 화이트)
+Ink:    #18181B  ██████ (먹색 차콜)
+Crayon: #F97316  ██████ (크레파스 오렌지)
+
+Yellow: #FDE047  ██████ (형광펜 노랑)
+Pink:   #FB7185  ██████ (크레파스 핑크)
+Blue:   #60A5FA  ██████ (크레파스 블루)
+Green:  #4ADE80  ██████ (크레파스 그린)
+```
+
+---
+
+## 🔗 참고 자료
+
+- **Naive Design 트렌드**: 2026년 손그림 느낌 UI
+- **Pretendard 폰트**: https://github.com/orioncactus/pretendard
+- **KCC임권택체**: 눈누 https://noonnu.cc/
+- **레퍼런스**: Café de la Presse 스타일
+
+---
+
+**⚠️ 모든 UI 개발 시 이 가이드를 참고하세요!**
+
+**🐕 강아지와 함께하는 따뜻한 카페를 만들어요!**

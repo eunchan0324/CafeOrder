@@ -7,75 +7,35 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: '#0f766e',
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e', // Main
-          800: '#115e59',
-          900: '#134e4a',
+        // My Doodle Cafe - Naive Design 컬러 시스템
+        paper: '#F8F4F0',        // 배경: 아주 연한 종이색 (따뜻한 베이지 화이트)
+        ink: '#18181B',          // 메인 블랙: 먹색 느낌의 차콜
+        crayon: {
+          DEFAULT: '#F97316',    // 강조: 크레파스 오렌지
+          hover: '#EA580C',      // 호버: 진한 오렌지
         },
-        secondary: {
-          DEFAULT: '#fff7ed',
-          50: '#fffbf5',
-          100: '#fff7ed', // Main
-          200: '#fef3e2',
-          300: '#fdead7',
-        },
-        accent: {
-          DEFAULT: '#f97316',
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316', // Main
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
-        },
-        danger: {
-          DEFAULT: '#ef4444',
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444', // Main
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
-        },
-        success: {
-          DEFAULT: '#22c55e',
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e', // Main
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+        
+        // 추가 컬러 (필요시 사용)
+        doodle: {
+          yellow: '#FDE047',     // 형광펜 노랑
+          pink: '#FB7185',       // 크레파스 핑크
+          blue: '#60A5FA',       // 크레파스 블루
+          green: '#4ADE80',      // 크레파스 그린
         },
       },
       fontFamily: {
-        sans: ['Pretendard', 'system-ui', '-apple-system', 'sans-serif'],
+        doodle: ['KCCImkwontaek', 'cursive'],            // 타이틀: 붓글씨 (투박한 손글씨)
+        sans: ['Pretendard', 'system-ui', 'sans-serif'], // 본문: 가독성 좋은 고딕
       },
       borderRadius: {
-        'cozy': '16px',
+        'doodle': '12px',        // 손그림 느낌의 라운드
       },
       boxShadow: {
-        'cozy': '0 4px 20px rgba(0, 0, 0, 0.08)',
-        'cozy-hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
+        'doodle': '4px 4px 0px 0px #18181B',  // 삐뚤빼뚤한 그림자 (Naive 스타일)
+      },
+      backgroundImage: {
+        // 나중에 종이 질감 패턴 이미지 추가 시 사용
+        // 'paper-texture': "url('/assets/paper-texture.png')",
       },
       // 레이아웃별 반응형 브레이크포인트
       screens: {
