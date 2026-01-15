@@ -8,7 +8,7 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { label: '메뉴', path: '/customer/menu', icon: '☕' },
+  { label: '메뉴', path: '/customer/menus', icon: '☕' },
   { label: '추천', path: '/customer/pick', icon: '👍' },
   { label: '내역', path: '/customer/history', icon: '🧾' },
   { label: '마이', path: '/customer/my', icon: '🙂' },

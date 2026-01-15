@@ -47,11 +47,11 @@ export default function SelectStore() {
 
   const handleProceed = () => {
     if (!selectedStoreId) return;
-    navigate('/customer/menu', { state: { storeId: selectedStoreId } });
+    navigate('/customer/menus', { state: { storeId: selectedStoreId } });
   };
 
   return (
-    <CustomerLayout>
+    <CustomerLayout showNav={false}>
       <div className="py-6 px-4 pb-28">
         <div className="flex items-center justify-between">
           <div>

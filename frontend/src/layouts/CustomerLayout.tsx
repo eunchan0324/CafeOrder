@@ -8,9 +8,10 @@ import StoreFloatingBar from '../components/customer/StoreFloatingBar';
 
 interface CustomerLayoutProps {
   children?: ReactNode;
+  showNav?: boolean;
 }
 
-export default function CustomerLayout({ children }: CustomerLayoutProps) {
+export default function CustomerLayout({ children, showNav = true }: CustomerLayoutProps) {
   const content = children ?? <Outlet />;
   return (
     <div className="min-h-screen">
@@ -22,12 +23,16 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
         </header> */}
 
         {/* 메인 컨텐츠 */}
-        <main className="pb-nav-mobile">
-          {children}
+        <main className={showNav ? 'pb-32' : 'pb-6'}>
+          {content}
         </main>
 
-        <StoreFloatingBar />
-        <BottomNav />
+        {showNav && (
+          <>
+            <StoreFloatingBar />
+            <BottomNav />
+          </>
+        )}
       </div>
     </div>
   );
