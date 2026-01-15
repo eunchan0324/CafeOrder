@@ -34,9 +34,14 @@
   }
 
   body {
-    @apply bg-paper text-ink font-sans;
+    @apply text-ink font-sans;
     margin: 0;
     min-height: 100vh;
+    background-image: url('/images/paper-texture.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 
   /* 모바일 뷰포트 높이 이슈 해결 */
@@ -58,22 +63,44 @@
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
+  /* 조합: 만화책 그림자 + 울퉁불퉁 모서리 (Best!) */
   .btn-primary {
-    @apply bg-ink text-white hover:bg-ink/90;
-    @apply focus:ring-ink shadow-doodle hover:translate-x-1 hover:translate-y-1 hover:shadow-none;
-    @apply transition-all duration-150;
+    @apply bg-ink text-white font-doodle font-bold;
+    @apply border-2 border-ink;
+    @apply transition-all duration-200;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 4px 4px 0px 0px #18181B;
+  }
+  
+  .btn-primary:hover {
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
 
   .btn-crayon {
-    @apply bg-crayon text-white hover:bg-crayon-hover;
-    @apply focus:ring-crayon shadow-doodle hover:translate-x-1 hover:translate-y-1 hover:shadow-none;
-    @apply transition-all duration-150;
+    @apply bg-crayon text-white font-doodle font-bold;
+    @apply border-2 border-ink;
+    @apply transition-all duration-200;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 4px 4px 0px 0px #18181B;
+  }
+  
+  .btn-crayon:hover {
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
 
   .btn-danger {
-    @apply bg-red-500 text-white hover:bg-red-600;
-    @apply focus:ring-red-500 shadow-doodle hover:translate-x-1 hover:translate-y-1 hover:shadow-none;
-    @apply transition-all duration-150;
+    @apply bg-red-500 text-white font-doodle font-bold;
+    @apply border-2 border-ink;
+    @apply transition-all duration-200;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 4px 4px 0px 0px #18181B;
+  }
+  
+  .btn-danger:hover {
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
 
   /* 카드 스타일 - Naive Design 느낌 */

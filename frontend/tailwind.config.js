@@ -37,6 +37,9 @@ export default {
         // 나중에 종이 질감 패턴 이미지 추가 시 사용
         // 'paper-texture': "url('/assets/paper-texture.png')",
       },
+      animation: {
+        'bounce-slow': 'bounce 2s infinite',
+      },
       // 레이아웃별 반응형 브레이크포인트
       screens: {
         'mobile': '375px',      // Customer (모바일)
