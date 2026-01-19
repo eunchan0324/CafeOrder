@@ -45,13 +45,14 @@ export default function StoreFloatingBar({
           type="button"
           onClick={handleClick}
           className="flex-grow flex items-center justify-center gap-2
-                     bg-crayon/30 text-ink font-doodle text-base
+                     text-ink font-doodle text-base
                      border-2 border-ink
                      shadow-[3px_5px_0px_0px_#18181B]
                      rounded-tl-2xl rounded-tr-lg rounded-bl-3xl rounded-br-xl
                      -rotate-2 hover:rotate-1 hover:scale-105
                      transition-transform duration-200
                      py-3 px-4"
+          style={{ backgroundColor: '#F3C6A3' }}
         >
           <MapPin className="h-5 w-5 text" strokeWidth={2.3} aria-hidden />
           <span>{currentStoreName}</span>

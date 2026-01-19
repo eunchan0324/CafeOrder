@@ -5,6 +5,7 @@ import AdminLogin from './pages/admin/Login';
 import './App.css';
 import SelectStore from './pages/customer/SelectStore';
 import MenuList from './pages/customer/MenuList';
+import MenuDetail from './pages/customer/MenuDetail';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         {/* Customer 라우트 */}
         <Route path="/customer/select_store" element={<SelectStore />} />
         <Route path="/customer/menus" element={<MenuList />} />
+        <Route path="/customer/menus/:menuId" element={<MenuDetail />} />
 
         {/* Seller 라우트 (나중에 추가) */}
         {/* <Route path="/seller/dashboard" element={<SellerDashboard />} /> */}
