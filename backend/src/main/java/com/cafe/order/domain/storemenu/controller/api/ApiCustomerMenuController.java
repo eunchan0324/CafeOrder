@@ -13,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,5 +89,33 @@ public class ApiCustomerMenuController {
             // 예외 처리 (404)
             return ResponseEntity.status(404).body(e.getMessage());
         }
+    }
+
+    /**
+     * 찜 상태 토글
+     */
+    @PostMapping("/{menuId}/toggle-favorite")
+    public ResponseEntity<?> toggleFavorite(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable UUID menuId) {
+
+        // 1. 비로그인 처리
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        Integer userId = userDetails.getId();
+
+        // 2. 서비스 호출 (토글 실행)
+        favoriteMenuService.toggleFavorite(userId, menuId);
+
+        // 3. [팁] 현재 찜 상태가 어떤지 다시 확인해서 알려주기
+        boolean isFavorite = favoriteMenuService.isMenuFavorite(userId, menuId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("isFavorite", isFavorite);
+        response.put("message", isFavorite ? "찜 목록에 추가되었습니다." : "찜 목록에서 제거되었습니다.");
+
+        return ResponseEntity.ok(response);
     }
 }
