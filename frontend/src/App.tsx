@@ -7,6 +7,7 @@ import SelectStore from './pages/customer/SelectStore';
 import MenuList from './pages/customer/MenuList';
 import MenuDetail from './pages/customer/MenuDetail';
 import CustomerLogin from './pages/customer/Login';
+import MyPage from './pages/customer/MyPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         {/* Customer 라우트 */}
         <Route path="/customer/login" element={<CustomerLogin />} />
         <Route path="/customer/select_store" element={<SelectStore />} />
+        <Route path="/customer/my" element={<MyPage />} />
         <Route path="/customer/stores/:storeId/menus" element={<MenuList />} />
         <Route path="/customer/stores/:storeId/menus/:menuId" element={<MenuDetail />} />
 
