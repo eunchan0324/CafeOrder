@@ -2,18 +2,18 @@ package com.cafe.order.global.security.config;
 
 import com.cafe.order.domain.user.service.UserService;
 import com.cafe.order.global.security.handler.CustomAuthenticationSuccessHandler;
+import com.cafe.order.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.cafe.order.global.security.jwt.JwtAuthenticationFilter;
 import com.cafe.order.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -32,6 +32,7 @@ public class SecurityConfig {
     // JWT 관련 의존성 추가
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,6 +40,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+
+                // 인증 실패 시 처리 (HTML 로그인 페이지로 리다이렉트 방지)
+                .exceptionHandling(handler -> handler
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 // 1. JWT 필터 등록
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userService),
@@ -56,7 +61,24 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/users/signup", "/join", "/login-proc").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll() // JWT 로그인 api 허용
 
-                        // [API 권한 설정] - JWT 토큰이 있으면 필터가 인증 처리해줌
+                        // === [API 권한 설정] - JWT 토큰이 있으면 필터가 인증 처리해줌 ===
+
+                        // [StoreApiController] 가게 관리
+                        // 조회(GET)는 로그인한 누구나 (또는 구매자도) 가능하게? -> authenticated()로 퉁치거나 CUSTOMER 추가
+                        .requestMatchers(HttpMethod.GET, "/api/v1/stores/**").authenticated()
+
+                        // 가게 생성/삭제는 관리자만
+                        .requestMatchers(HttpMethod.POST, "/api/v1/stores").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/stores/*").hasRole("ADMIN")
+
+                        // 가게 정보 수정은 관리자와 판매자만
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/stores/*").hasAnyRole("ADMIN", "SELLER")
+
+                        // [StoreMenuApiController] 메뉴판 & 찜하기
+                        // 메뉴판 보기와 찜하기는 구매자 전용 기능
+                        .requestMatchers("/api/v1/stores/*/menus/**").hasRole("CUSTOMER")
+
+
                         .requestMatchers("/api/v1/customer/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/v1/seller/**").hasRole("SELLER")
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")

@@ -10,7 +10,6 @@ import com.cafe.order.domain.storemenu.service.StoreMenuService;
 import com.cafe.order.global.security.dto.CustomUserDetails;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +18,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/customer/menus")
+@RequestMapping("/api/v1/stores/{storeId}/menus")
 @RequiredArgsConstructor
-public class ApiCustomerMenuController {
+public class StoreMenuApiController {
 
     private final StoreService storeService;
     private final StoreMenuService storeMenuService;
@@ -31,16 +30,9 @@ public class ApiCustomerMenuController {
      * 지점의 메뉴 리스트 조회
      */
     @GetMapping
-    public ResponseEntity<?> getStoreMenus(HttpSession session) {
-        // 1. 세션에서 storeId 가져오기
-        Integer storeId = (Integer) session.getAttribute("currentStoreId");
+    public ResponseEntity<?> getStoreMenus(@PathVariable Integer storeId) {
 
-        // 2. storeId가 없을 경우 에러 응답 반환
-        if (storeId == null) {
-            return ResponseEntity.badRequest().body("지점이 선택되지 않았습니다.");
-        }
-
-        // 3. 서비스에서 데이터 조회
+        // 1. 파라미터로 받은 storeId로 서비스에서 데이터 조회
         Store store = storeService.findById(storeId);
         List<CustomerMenuResponse> rawMenus = storeMenuService.findAllMenusWithAvailability(storeId);
 
@@ -62,7 +54,7 @@ public class ApiCustomerMenuController {
     @GetMapping("/{menuId}")
     public ResponseEntity<?> getMenuDetail(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            HttpSession session,
+            @PathVariable Integer storeId,
             @PathVariable UUID menuId) {
 
         // 비로그인 처리
@@ -70,21 +62,11 @@ public class ApiCustomerMenuController {
             return ResponseEntity.status(401).body("로그인이 필요합니다.");
         }
 
-        Integer storeId = (Integer) session.getAttribute("currentStoreId");
-
-        // 지점 미선택 처리
-        if (storeId == null) {
-            return ResponseEntity.badRequest().body("지점이 선택되지 않았습니다.");
-        }
-
         try {
-            // 서비스 호출
             Integer userId = userDetails.getId();
             CustomerMenuDetailResponse menuDetailResponse = storeMenuService.findMenuDetail(storeId, menuId, userId);
 
-            // 성공 응답
             return ResponseEntity.ok(menuDetailResponse);
-
         } catch (IllegalArgumentException e) {
             // 예외 처리 (404)
             return ResponseEntity.status(404).body(e.getMessage());
@@ -97,6 +79,7 @@ public class ApiCustomerMenuController {
     @PostMapping("/{menuId}/toggle-favorite")
     public ResponseEntity<?> toggleFavorite(
             @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Integer storeId,
             @PathVariable UUID menuId) {
 
         // 1. 비로그인 처리
