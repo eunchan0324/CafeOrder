@@ -16,8 +16,8 @@ function App() {
 
         {/* Customer 라우트 */}
         <Route path="/customer/select_store" element={<SelectStore />} />
-        <Route path="/customer/menus" element={<MenuList />} />
-        <Route path="/customer/menus/:menuId" element={<MenuDetail />} />
+        <Route path="/customer/stores/:storeId/menus" element={<MenuList />} />
+        <Route path="/customer/stores/:storeId/menus/:menuId" element={<MenuDetail />} />
 
         {/* Seller 라우트 (나중에 추가) */}
         {/* <Route path="/seller/dashboard" element={<SellerDashboard />} /> */}
