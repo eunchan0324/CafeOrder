@@ -19,6 +19,14 @@ export default function SelectStore() {
   const characterImages = ['/images/nala_welcome.png', '/images/simba_manager.png'];
 
   useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      navigate('/customer/login');
+      return;
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     let isMounted = true;
 
     async function fetchStores() {
@@ -51,7 +59,7 @@ export default function SelectStore() {
     if (!selectedStoreId || !selectedStoreName) return;
     sessionStorage.setItem('selectedStoreId', String(selectedStoreId));
     sessionStorage.setItem('selectedStoreName', selectedStoreName);
-    navigate('/customer/menus', { state: { storeId: selectedStoreId } });
+    navigate(`/customer/stores/${selectedStoreId}/menus`);
   };
 
   return (

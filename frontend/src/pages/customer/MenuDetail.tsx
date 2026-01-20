@@ -42,7 +42,7 @@ const SHOT_OPTIONS: { value: ShotOption; label: string; priceDelta: number }[] =
 ];
 
 export default function MenuDetail() {
-  const { menuId } = useParams<{ menuId: string }>();
+  const { storeId, menuId } = useParams<{ storeId: string; menuId: string }>();
   const navigate = useNavigate();
   const [menu, setMenu] = useState<CustomerMenuDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,10 +54,15 @@ export default function MenuDetail() {
   const [shotOption, setShotOption] = useState<ShotOption>('NONE');
 
   useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      navigate('/customer/login');
+      return;
+    }
     let isMounted = true;
 
     async function fetchMenuDetail() {
-      if (!menuId) {
+      if (!storeId || !menuId) {
         setErrorMessage('메뉴 정보를 찾을 수 없어요.');
         setLoading(false);
         return;
@@ -65,7 +70,7 @@ export default function MenuDetail() {
 
       try {
         const response = await api.get<CustomerMenuDetailResponse>(
-          `/api/v1/customer/menus/${menuId}`,
+          `/api/v1/stores/${storeId}/menus/${menuId}`,
         );
         if (!isMounted) return;
         setMenu(response.data);
@@ -83,7 +88,7 @@ export default function MenuDetail() {
     return () => {
       isMounted = false;
     };
-  }, [menuId]);
+  }, [menuId, navigate]);
 
   useEffect(() => {
     if (!menu) return;
@@ -108,9 +113,11 @@ export default function MenuDetail() {
   const totalPrice = menu ? (menu.price + optionDelta) * quantity : 0;
 
   const handleToggleFavorite = async () => {
-    if (!menuId || !menu) return;
+    if (!storeId || !menuId || !menu) return;
     try {
-      const response = await api.post(`/api/v1/customer/menus/${menuId}/toggle-favorite`);
+      const response = await api.post(
+        `/api/v1/stores/${storeId}/menus/${menuId}/toggle-favorite`,
+      );
       const nextFavorite =
         typeof response.data?.isFavorite === 'boolean'
           ? response.data.isFavorite

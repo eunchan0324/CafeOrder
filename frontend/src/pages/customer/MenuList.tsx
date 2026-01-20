@@ -1,6 +1,6 @@
 // src/pages/customer/MenuList.tsx
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CustomerLayout from '../../layouts/CustomerLayout';
 import api from '../../api/axios';
 
@@ -35,17 +35,27 @@ const CATEGORY_LABEL: Record<Category, string> = {
 
 export default function MenuList() {
   const navigate = useNavigate();
+  const { storeId } = useParams<{ storeId: string }>();
   const [menus, setMenus] = useState<MenuResponse['menus']>({});
   const [activeCategory, setActiveCategory] = useState<Category>('COFFEE');
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      navigate('/customer/login');
+      return;
+    }
     let isMounted = true;
 
     async function fetchMenus() {
       try {
-        const response = await api.get<MenuResponse>('/api/v1/customer/menus');
+        if (!storeId) {
+          setErrorMessage('지점 정보가 없습니다. 다시 선택해주세요.');
+          return;
+        }
+        const response = await api.get<MenuResponse>(`/api/v1/stores/${storeId}/menus`);
         if (!isMounted) return;
         setMenus(response.data.menus ?? {});
         setErrorMessage(null);
@@ -67,7 +77,7 @@ export default function MenuList() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [navigate]);
 
   const categoryTabs = useMemo(() => {
     const ordered: Category[] = ['COFFEE', 'BEVERAGE', 'DESSERT'];
@@ -92,7 +102,7 @@ export default function MenuList() {
   useEffect(() => {
     if (categoryTabs.length === 0) return;
     if (!hasRestoredCategory.current) {
-      const stored = sessionStorage.getItem('customerActiveCategory') as Category | null;
+      const stored = sessionStorage.getItem(`customerActiveCategory:${storeId}`) as Category | null;
       if (stored && categoryTabs.includes(stored)) {
         setActiveCategory(stored);
         hasRestoredCategory.current = true;
@@ -107,8 +117,9 @@ export default function MenuList() {
 
   useEffect(() => {
     if (!hasRestoredCategory.current) return;
-    sessionStorage.setItem('customerActiveCategory', activeCategory);
-  }, [activeCategory]);
+    if (!storeId) return;
+    sessionStorage.setItem(`customerActiveCategory:${storeId}`, activeCategory);
+  }, [activeCategory, storeId]);
 
   return (
     <CustomerLayout>
@@ -184,7 +195,7 @@ export default function MenuList() {
                   <button
                     key={menu.menuId}
                     type="button"
-                    onClick={() => navigate(`/customer/menus/${menu.menuId}`)}
+                    onClick={() => navigate(`/customer/stores/${storeId}/menus/${menu.menuId}`)}
                     aria-disabled={!isAvailable}
                     className={`card p-4 text-left transition-all duration-150 shadow-none translate-x-1 translate-y-1 hover:translate-x-1 hover:translate-y-1 hover:shadow-none ${
                       isAvailable ? 'bg-white' : 'bg-white/70 grayscale opacity-70'
