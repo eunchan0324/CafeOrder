@@ -2,12 +2,17 @@
 // Customer용 모바일 레이아웃
 
 import type { ReactNode } from 'react';
+import { Outlet } from 'react-router-dom';
+import BottomNav from '../components/customer/BottomNav';
+import StoreFloatingBar from '../components/customer/StoreFloatingBar';
 
 interface CustomerLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
+  showNav?: boolean;
 }
 
-export default function CustomerLayout({ children }: CustomerLayoutProps) {
+export default function CustomerLayout({ children, showNav = true }: CustomerLayoutProps) {
+  const content = children ?? <Outlet />;
   return (
     <div className="min-h-screen">
       {/* 모바일 컨테이너 */}
@@ -18,14 +23,16 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
         </header> */}
 
         {/* 메인 컨텐츠 */}
-        <main className="pb-nav-mobile">
-          {children}
+        <main className={showNav ? 'pb-32' : 'pb-6'}>
+          {content}
         </main>
 
-        {/* 하단 네비게이션 (나중에 추가) */}
-        {/* <nav className="fixed bottom-0 left-0 right-0 h-nav-mobile bg-white border-t-2 border-ink">
-          // 하단 네비 버튼들
-        </nav> */}
+        {showNav && (
+          <>
+            <StoreFloatingBar />
+            <BottomNav />
+          </>
+        )}
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ export default function SelectStore() {
   const navigate = useNavigate();
   const [stores, setStores] = useState<Store[]>([]);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
+  const [selectedStoreName, setSelectedStoreName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const characterImages = ['/images/nala_welcome.png', '/images/simba_manager.png'];
@@ -41,17 +42,20 @@ export default function SelectStore() {
     };
   }, []);
 
-  const handleSelect = (storeId: number) => {
+  const handleSelect = (storeId: number, storeName: string) => {
     setSelectedStoreId(storeId);
+    setSelectedStoreName(storeName);
   };
 
   const handleProceed = () => {
-    if (!selectedStoreId) return;
-    navigate('/customer/menu', { state: { storeId: selectedStoreId } });
+    if (!selectedStoreId || !selectedStoreName) return;
+    sessionStorage.setItem('selectedStoreId', String(selectedStoreId));
+    sessionStorage.setItem('selectedStoreName', selectedStoreName);
+    navigate('/customer/menus', { state: { storeId: selectedStoreId } });
   };
 
   return (
-    <CustomerLayout>
+    <CustomerLayout showNav={false}>
       <div className="py-6 px-4 pb-28">
         <div className="flex items-center justify-between">
           <div>
@@ -98,7 +102,7 @@ export default function SelectStore() {
                   <button
                     key={store.id}
                     type="button"
-                    onClick={() => handleSelect(store.id)}
+                    onClick={() => handleSelect(store.id, store.name)}
                     className={`card relative group text-left px-5 py-4 pr-20 transition-all duration-150 rounded-[22px_14px_20px_12px/12px_20px_14px_22px] ${
                       isSelected
                         ? 'border-crayon bg-crayon/10'
