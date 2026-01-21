@@ -1,6 +1,7 @@
 package com.cafe.order.domain.order.controller.api;
 
 import com.cafe.order.domain.order.dto.OrderCreateRequest;
+import com.cafe.order.domain.order.entity.Order;
 import com.cafe.order.domain.order.service.OrderService;
 import com.cafe.order.global.security.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +38,12 @@ public class CustomerOrderApiController {
 
         // 2. 서비스 호출
         Integer userId = userDetails.getId();
-        UUID orderId = orderService.createOrder(userId, request);
+        Order order = orderService.createOrder(userId, request);
 
         // 3. 성공 응답 (생성된 주문 ID 반환)
         Map<String, Object> response = new HashMap<>();
-        response.put("orderId", orderId);
+        response.put("orderId", order.getOrderId());
+        response.put("waitingNumber", order.getWaitingNumber());
         response.put("message", "주문이 성공적으로 접수되었습니다.");
 
         // 상태코드 201

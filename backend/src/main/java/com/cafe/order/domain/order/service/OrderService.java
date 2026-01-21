@@ -52,7 +52,7 @@ public class OrderService {
      * @return 생성된 주문의 UUID
      */
     @Transactional
-    public UUID createOrder(Integer userId, OrderCreateRequest request) {
+    public Order createOrder(Integer userId, OrderCreateRequest request) {
         // 1. 사용자 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
@@ -131,7 +131,7 @@ public class OrderService {
 
         orderRepository.save(order);
 
-        return order.getOrderId();
+        return order;
     }
 
 
