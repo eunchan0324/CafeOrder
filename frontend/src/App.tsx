@@ -1,12 +1,11 @@
 // src/App.tsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
-import AdminLogin from './pages/admin/Login';
+import Login from './pages/Login';
 import './App.css';
 import SelectStore from './pages/customer/SelectStore';
 import MenuList from './pages/customer/MenuList';
 import MenuDetail from './pages/customer/MenuDetail';
-import CustomerLogin from './pages/customer/Login';
 import MyPage from './pages/customer/MyPage';
 import Cart from './pages/customer/Cart';
 import OrderComplete from './pages/customer/OrderComplete';
@@ -22,8 +21,14 @@ function App() {
         {/* 랜딩 페이지 */}
         <Route path="/" element={<Landing />} />
 
+        {/* 통합 로그인 */}
+        <Route path="/login" element={<Login />} />
+
+        {/* 기존 로그인 경로 리다이렉트 (호환성) */}
+        <Route path="/customer/login" element={<Navigate to="/login" replace />} />
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+
         {/* Customer 라우트 */}
-        <Route path="/customer/login" element={<CustomerLogin />} />
         <Route path="/customer/select_store" element={<SelectStore />} />
         <Route path="/customer/my" element={<MyPage />} />
         <Route path="/customer/cart" element={<Cart />} />
@@ -37,8 +42,7 @@ function App() {
         {/* Seller 라우트 (나중에 추가) */}
         {/* <Route path="/seller/dashboard" element={<SellerDashboard />} /> */}
 
-        {/* Admin 라우트 */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        {/* Admin 라우트 (나중에 추가) */}
         {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
 
         {/* 403 권한 없음 페이지 */}
