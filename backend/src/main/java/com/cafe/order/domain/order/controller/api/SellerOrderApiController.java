@@ -1,6 +1,8 @@
 package com.cafe.order.domain.order.controller.api;
 
 import com.cafe.order.domain.order.dto.OrderStatusUpdateRequest;
+import com.cafe.order.domain.order.dto.SellerOrderItemDto;
+import com.cafe.order.domain.order.dto.SellerOrderResponse;
 import com.cafe.order.domain.order.entity.Order;
 import com.cafe.order.domain.order.service.OrderService;
 import com.cafe.order.global.security.dto.CustomUserDetails;
@@ -27,13 +29,17 @@ public class SellerOrderApiController {
      * - FE에서 상태별로 분류해서 보여줄 예정
      */
     @GetMapping
-    public ResponseEntity<List<Order>> getActiveOrders(
+    public ResponseEntity<List<SellerOrderResponse>> getActiveOrders(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Integer storeId) {
 
         List<Order> activeOrders = orderService.findActiveOrderByStoreId(storeId);
 
-        return ResponseEntity.ok(activeOrders);
+        List<SellerOrderResponse> response = activeOrders.stream()
+                .map(SellerOrderResponse::new)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     /**

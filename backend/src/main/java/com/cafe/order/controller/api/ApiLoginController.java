@@ -48,6 +48,7 @@ public class ApiLoginController {
 
         if (user.getStore() != null) {
             response.put("storeId", String.valueOf(user.getStore().getId()));
+            response.put("storeName", user.getStore().getName());
         }
 
         return ResponseEntity.ok(response);
