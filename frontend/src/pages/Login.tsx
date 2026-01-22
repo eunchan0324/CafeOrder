@@ -9,12 +9,14 @@ type Role = 'CUSTOMER' | 'SELLER' | 'ADMIN';
 type LoginResponse = {
   accessToken: string;
   role: Role;
+  storeId?: string;
+  storeName?: string;
   message?: string;
 };
 
 const ROLE_REDIRECT: Record<Role, string> = {
   CUSTOMER: '/customer/select_store',
-  SELLER: '/seller/dashboard',
+  SELLER: '/seller/orders',
   ADMIN: '/admin/dashboard',
 };
 
@@ -39,11 +41,19 @@ export default function Login() {
         password,
       });
 
-      const { accessToken, role } = response.data;
+      const { accessToken, role, storeId, storeName } = response.data;
 
       // 토큰 & role 저장
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('userRole', role);
+
+      // 판매자인 경우 storeId, storeName 저장
+      if (role === 'SELLER' && storeId) {
+        sessionStorage.setItem('sellerStoreId', storeId);
+        if (storeName) {
+          sessionStorage.setItem('sellerStoreName', storeName);
+        }
+      }
 
       setErrorMessage(null);
 

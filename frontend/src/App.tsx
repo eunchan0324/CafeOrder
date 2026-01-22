@@ -12,6 +12,8 @@ import OrderComplete from './pages/customer/OrderComplete';
 import OrderHistory from './pages/customer/OrderHistory';
 import RecommendMenu from './pages/customer/RecommendMenu';
 import Favorites from './pages/customer/Favorites';
+import SellerLayout from './layouts/SellerLayout';
+import SellerOrders from './pages/seller/Orders';
 import Forbidden from './pages/Forbidden';
 
 function App() {
@@ -39,8 +41,12 @@ function App() {
         <Route path="/customer/stores/:storeId/menus" element={<MenuList />} />
         <Route path="/customer/stores/:storeId/menus/:menuId" element={<MenuDetail />} />
 
-        {/* Seller 라우트 (나중에 추가) */}
-        {/* <Route path="/seller/dashboard" element={<SellerDashboard />} /> */}
+        {/* Seller 라우트 (중첩 라우트) */}
+        <Route path="/seller" element={<SellerLayout />}>
+          <Route index element={<Navigate to="/seller/orders" replace />} />
+          <Route path="orders" element={<SellerOrders />} />
+          {/* <Route path="sales" element={<SellerSales />} /> */}
+        </Route>
 
         {/* Admin 라우트 (나중에 추가) */}
         {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
