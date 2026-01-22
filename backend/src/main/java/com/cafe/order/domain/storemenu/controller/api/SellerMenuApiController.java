@@ -1,5 +1,6 @@
 package com.cafe.order.domain.storemenu.controller.api;
 
+import com.cafe.order.domain.storemenu.dto.SellerMenuManageDto;
 import com.cafe.order.domain.storemenu.dto.SellerMenuResponse;
 import com.cafe.order.domain.storemenu.dto.SellerMenuUpdateRequest;
 import com.cafe.order.domain.storemenu.dto.SellerRecommendUpdateRequest;
@@ -71,4 +72,26 @@ public class SellerMenuApiController {
         return ResponseEntity.ok().body("추천 상태가 변경되었습니다.");
     }
 
+    /**
+     * 본사 전체 메뉴 목록 조회 (+ 판매 여부 포함)
+     */
+    @GetMapping("/all")
+    public ResponseEntity<List<SellerMenuManageDto>> getAllMenusWithStatus(@PathVariable Integer storeId) {
+        List<SellerMenuManageDto> menus = storeMenuService.findAllMenusSellingStatus(storeId);
+        return ResponseEntity.ok(menus);
+    }
+
+    /**
+     * 판매 메뉴 일괄 업데이트
+     * - 체크박스로 선택된 메뉴 ID 리스트를 받아, 내 가게의 판매 메뉴 목록을 갱신
+     */
+    @PostMapping("/batch-update")
+    public ResponseEntity<?> updateBatchMenus(
+            @PathVariable Integer storeId,
+            @RequestBody List<UUID> selectedMenuIds) { // JSON 리스트를 바로 받음
+
+        storeMenuService.updateStoreMenus(storeId, selectedMenuIds);
+
+        return ResponseEntity.ok().body("판매 메뉴 목록이 업데이트되었습니다.");
+    }
 }

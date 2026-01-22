@@ -14,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -51,11 +48,37 @@ public class StoreMenuService {
         storeMenu.setRecommendType(recommendType);
     }
 
+    /**
+     * 본사 전체 메뉴 목록 조회 + 우리 가게 판매 여부 포함
+     * - 그 중 우리 가게 (storeId)가 현재 팔고 있는 메뉴는 isSelling = true로 표시
+     */
+    @Transactional(readOnly = true)
+    public List<SellerMenuManageDto> findAllMenusSellingStatus(Integer storeId) {
+        // 1. 본사 메뉴 전체 리스트 조회
+        List<Menu> allMenus = menuRepository.findAll();
+
+        // 2. 우리 가게에서 현재 팔고있는 메뉴들의 ID 목록만 조회 (비교를 위해)
+        Set<UUID> sellingMenuIds = storeMenuRepository.findByStore_Id(storeId).stream()
+                .map(sm -> sm.getMenu().getId())
+                .collect(Collectors.toSet()); // Set을 사용해서 조회 속도 향상
+
+        // 3. 전체 메뉴를 순회하며 DTO로 변환
+        return allMenus.stream()
+                .map(menu -> new SellerMenuManageDto(
+                        menu.getId(),
+                        menu.getName(),
+                        menu.getPrice(),
+                        menu.getCategory(),
+                        sellingMenuIds.contains(menu.getId()) // 우리 가게가 팔고 있는 메뉴 ID 목록에 포함되면 true
+                ))
+                .toList();
+    }
+
 
 
 
     // ==============================
-    // ========== 타임리프 ==========
+    // ============ VIEW ============
     // ==============================
 
     // ========== 판매자 : 판매 메뉴 관리 기능 ==========
