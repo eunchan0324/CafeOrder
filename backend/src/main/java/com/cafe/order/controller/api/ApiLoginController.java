@@ -46,6 +46,10 @@ public class ApiLoginController {
         response.put("role", user.getRole().name());
         response.put("message", "로그인 성공!");
 
+        if (user.getStore() != null) {
+            response.put("storeId", String.valueOf(user.getStore().getId()));
+        }
+
         return ResponseEntity.ok(response);
     }
 
