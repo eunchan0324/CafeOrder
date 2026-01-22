@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/stores/{storeId}/menus")
+@RequestMapping("/api/v1/stores/{storeId}/management/menus")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('SELLER')")
 public class SellerMenuApiController {
