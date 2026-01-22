@@ -6,6 +6,7 @@ import com.cafe.order.domain.store.entity.Store;
 import com.cafe.order.domain.store.service.StoreService;
 import com.cafe.order.domain.storemenu.dto.CustomerMenuDetailResponse;
 import com.cafe.order.domain.storemenu.dto.CustomerMenuResponse;
+import com.cafe.order.domain.storemenu.dto.CustomerRecommendMenuDto;
 import com.cafe.order.domain.storemenu.service.StoreMenuService;
 import com.cafe.order.global.security.dto.CustomUserDetails;
 import jakarta.servlet.http.HttpSession;
@@ -102,5 +103,15 @@ public class StoreMenuApiController {
         response.put("message", isFavorite ? "찜 목록에 추가되었습니다." : "찜 목록에서 제거되었습니다.");
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 추천 메뉴 조회
+     */
+    @GetMapping("/recommend")
+    public ResponseEntity<?> getRecommendMenus(@PathVariable Integer storeId) {
+        List<CustomerRecommendMenuDto> recommendMenus = storeMenuService.findRecommendMenus(storeId);
+
+        return ResponseEntity.ok(recommendMenus);
     }
 }
