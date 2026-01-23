@@ -11,6 +11,7 @@ import MyPage from './pages/customer/MyPage';
 import Cart from './pages/customer/Cart';
 import OrderComplete from './pages/customer/OrderComplete';
 import OrderHistory from './pages/customer/OrderHistory';
+import RecommendMenu from './pages/customer/RecommendMenu';
 import Forbidden from './pages/Forbidden';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/customer/cart" element={<Cart />} />
         <Route path="/customer/order-complete" element={<OrderComplete />} />
         <Route path="/customer/history" element={<OrderHistory />} />
+        <Route path="/customer/pick" element={<RecommendMenu />} />
         <Route path="/customer/stores/:storeId/menus" element={<MenuList />} />
         <Route path="/customer/stores/:storeId/menus/:menuId" element={<MenuDetail />} />
 
