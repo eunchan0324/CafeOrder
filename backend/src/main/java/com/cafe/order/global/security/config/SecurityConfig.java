@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/error").permitAll()
                         .requestMatchers("/", "/login", "/users/signup", "/join", "/login-proc").permitAll()
+                        .requestMatchers("/api/v1/users/**").permitAll() // 회원가입
                         .requestMatchers("/api/v1/auth/**", "/api/health").permitAll() // JWT 로그인, 프론트 테스트용
                         
                         // 레거시(Thymeleaf) 페이지 권한
