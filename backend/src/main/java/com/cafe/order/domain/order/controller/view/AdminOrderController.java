@@ -1,6 +1,7 @@
 package com.cafe.order.domain.order.controller.view;
 
 import com.cafe.order.domain.order.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,13 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin/orders")
+@RequiredArgsConstructor
 public class AdminOrderController {
 
     private final OrderService orderService;
-
-    public AdminOrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     // READ : 전체 매출 조회
     @GetMapping
@@ -22,9 +20,4 @@ public class AdminOrderController {
         model.addAttribute("sales", orderService.getSalesByStore());
         return "sales/list";
     }
-
-
-
-
-
 }
